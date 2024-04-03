@@ -1,4 +1,7 @@
-.container {
+body {
+  margin: 0;
+}
+.main-container {
   width: 600px;
   margin: 80px auto 0;
   text-align: center;
@@ -15,3 +18,4 @@
 .finished-sessions h1 {
   font-weight: normal;
 }
+

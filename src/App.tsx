@@ -1,8 +1,10 @@
 import './App.css';
 
-import {useState} from "react";
+import { useState } from "react";
 import Push from "push.js";
 import { useTimer } from "react-timer-hook";
+import {useLocalStorage} from "./LocalStorage.tsx";
+import Header from "./Header.tsx";
 
 type Session = {
     startTime: Date;
@@ -87,7 +89,7 @@ function MyTimer({ expiryTimestamp }: { expiryTimestamp: Date }) {
     const totalGoalMinutes = 6 * 60;
 
     return (
-        <div className="container">
+        <div className="main-container">
             <div className="time">
                 {timerString(minutes, seconds)}
             </div>
@@ -138,11 +140,15 @@ const DoneSession = (session: Session) => {
 
 export default function App() {
     const time = new Date();
-    // time.setMinutes(time.getMinutes() + 25);
-    time.setSeconds(time.getSeconds() + 5);
+    const [length] = useLocalStorage("sessionLength", "25");
+    time.setSeconds(time.getSeconds() + parseInt(length));
+    // time.setMinutes(time.getSeconds() + parseInt(length));
     return (
-        <div>
-            <MyTimer expiryTimestamp={time}/>
-        </div>
+        <>
+            <Header/>
+            <div>
+                <MyTimer expiryTimestamp={time}/>
+            </div>
+        </>
     );
 }

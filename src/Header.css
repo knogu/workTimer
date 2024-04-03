@@ -1,0 +1,24 @@
+header .container{
+    height: 50px;
+    background-color: dimgray;
+    color: white;
+    display: flex;
+}
+
+header .container a {
+    display: block;
+    line-height: 50px;
+    color: white;
+    padding-left: 30px;
+    padding-right: 30px;
+    text-decoration: none;
+}
+
+header .container a:hover {
+    background-color: lightgray;
+}
+
+.top-link {
+    font-weight: bold;
+    font-size: 20px;
+}

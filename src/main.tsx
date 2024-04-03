@@ -6,11 +6,16 @@ import {
     createBrowserRouter,
     RouterProvider,
 } from "react-router-dom";
+import Settings from "./Config.tsx";
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <App/>,
+    },
+    {
+        path: "/settings",
+        element: <Settings/>,
     },
 ]);
 
