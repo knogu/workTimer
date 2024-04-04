@@ -2,7 +2,7 @@ import './App.css';
 
 import {useEffect, useState} from "react";
 import Push from "push.js";
-import { useTimer } from "react-timer-hook";
+import {useTimer} from "react-timer-hook";
 import {useLocalStorage} from "./LocalStorage.tsx";
 import Header from "./Header.tsx";
 import Dexie from 'dexie';
@@ -37,8 +37,7 @@ async function addSession(session: Session) {
 
 async function getAllSessions(): Promise<Session[]> {
     try {
-        const sessions = await db.sessions.toArray();
-        return sessions;
+        return await db.sessions.toArray();
     } catch (error) {
         console.error(error);
         return [];
@@ -61,7 +60,10 @@ function timerString(minutes: number, seconds: number) {
     return minutes.toString() + ":" + padZero(seconds)
 }
 
-function MyTimer({ expiryTimestamp }: { expiryTimestamp: Date }) {
+const Timer = (length: number) => {
+    const expiryTimestamp = new Date();
+    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + length);
+    // expiryTimeStamp.setMinutes(time.getSeconds() + parseInt(length));
     const [curSessionStartTime, setCurSessionStartTime] = useState<Date | null>(null);
     const [doneSessionList, setDoneSessionList] = useState<Session[]>([]);
     const [totalMinutes, setTotalMinutes] = useState<number>(0);
@@ -89,9 +91,9 @@ function MyTimer({ expiryTimestamp }: { expiryTimestamp: Date }) {
             setCurSessionStartTime(null);
 
             const time = new Date();
-            // time.setMinutes(time.getMinutes() + 25);
-            time.setSeconds(time.getSeconds() + 2);
-            setTotalMinutes((prevTotalSeconds) => prevTotalSeconds + 25);
+            // time.setMinutes(time.getMinutes() + length);
+            time.setSeconds(time.getSeconds() + length);
+            setTotalMinutes((prevTotalMinutes) => prevTotalMinutes + length);
 
             Push.create("Session finished", {
                 body: "Take a break",
@@ -186,15 +188,12 @@ const DoneSession = (session: Session) => {
 }
 
 export default function App() {
-    const time = new Date();
     const [length] = useLocalStorage("sessionLength", "25");
-    time.setSeconds(time.getSeconds() + parseInt(length));
-    // time.setMinutes(time.getSeconds() + parseInt(length));
     return (
         <>
             <Header/>
             <div>
-                <MyTimer expiryTimestamp={time}/>
+                {Timer(parseInt(length))}
             </div>
         </>
     );
