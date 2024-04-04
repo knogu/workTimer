@@ -1,14 +1,48 @@
 import './App.css';
 
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import Push from "push.js";
 import { useTimer } from "react-timer-hook";
 import {useLocalStorage} from "./LocalStorage.tsx";
 import Header from "./Header.tsx";
+import Dexie from 'dexie';
 
 type Session = {
     startTime: Date;
     endTime: Date;
+}
+
+class Database extends Dexie {
+    public sessions: Dexie.Table<Session, number>;
+
+    public constructor() {
+        super('Database');
+        this.version(1).stores({
+            sessions: '++id, startTime, endTime',
+        });
+        this.sessions = this.table('sessions');
+    }
+}
+
+const db = new Database();
+
+async function addSession(session: Session) {
+    try {
+        await db.sessions.add(session);
+        console.log("added")
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function getAllSessions(): Promise<Session[]> {
+    try {
+        const sessions = await db.sessions.toArray();
+        return sessions;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
 }
 
 function padZero(n: number) {
@@ -48,7 +82,10 @@ function MyTimer({ expiryTimestamp }: { expiryTimestamp: Date }) {
                 startTime: curSessionStartTime!,
                 endTime: new Date(),
             }
+
+            addSession(doneSession);
             setDoneSessionList([...doneSessionList, doneSession])
+
             setCurSessionStartTime(null);
 
             const time = new Date();
@@ -88,6 +125,12 @@ function MyTimer({ expiryTimestamp }: { expiryTimestamp: Date }) {
 
     const totalGoalMinutes = 6 * 60;
 
+    useEffect(() => {
+        getAllSessions().then((data) => {
+            setDoneSessionList(data)
+        })
+    }, []);
+
     return (
         <div className="main-container">
             <div className="time">
@@ -108,9 +151,13 @@ function MyTimer({ expiryTimestamp }: { expiryTimestamp: Date }) {
 
             <div className="finished-sessions">
                 <h1>finished sessions</h1>
-                {doneSessionList.map((doneSession) => {
-                    return DoneSession(doneSession)
-                })}
+                {   doneSessionList.length > 0 ?
+                    doneSessionList.map((doneSession) => {
+                        return DoneSession(doneSession)
+                    })
+                    :
+                    "no records yet"
+                }
             </div>
         </div>
     );
