@@ -180,11 +180,12 @@ const DoneSession = (session: Session) => {
 
     const diff = end.getTime() - start.getTime()
     const diff_s = Math.floor(diff / 1000)
+    const diff_s_remain = diff_s % 60
     const diff_m = Math.floor(diff_s / 60)
 
     return (
         <div>
-            <p>{start_h}:{start_m}:{start_s} - {end_h}:{end_m}:{end_s}  ({diff_m}m{diff_s}s)</p>
+            <p>{start_h}:{start_m}:{start_s} - {end_h}:{end_m}:{end_s}  ({diff_m}m{diff_s_remain}s)</p>
         </div>
     );
 }
