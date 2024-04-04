@@ -60,10 +60,13 @@ function timerString(minutes: number, seconds: number) {
     return minutes.toString() + ":" + padZero(seconds)
 }
 
+function amplifyIfProdEnv(n: number) {
+    return import.meta.env.MODE === 'production' ? n * 60 : n
+}
+
 const Timer = (length: number) => {
     const expiryTimestamp = new Date();
-    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + length);
-    // expiryTimeStamp.setMinutes(time.getSeconds() + parseInt(length));
+    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + amplifyIfProdEnv(length));
     const [curSessionStartTime, setCurSessionStartTime] = useState<Date | null>(null);
     const [doneSessionList, setDoneSessionList] = useState<Session[]>([]);
     const [totalMinutes, setTotalMinutes] = useState<number>(0);
@@ -91,8 +94,7 @@ const Timer = (length: number) => {
             setCurSessionStartTime(null);
 
             const time = new Date();
-            // time.setMinutes(time.getMinutes() + length);
-            time.setSeconds(time.getSeconds() + length);
+            time.setSeconds(time.getSeconds() + amplifyIfProdEnv(length));
             setTotalMinutes((prevTotalMinutes) => prevTotalMinutes + length);
 
             Push.create("Session finished", {
