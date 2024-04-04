@@ -1,0 +1,22 @@
+.settings-container {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.settings-container label {
+    display: inline-block;
+    width: 100px;
+    font-size: 20px;
+    vertical-align: top;
+}
+
+.settings-container input {
+    height: 20px;
+    font-size: 15px;
+    width: 25px;
+    margin-right: 3px;
+}
+
+.settings-container {
+    font-size: 17px;
+}
