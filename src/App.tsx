@@ -127,7 +127,8 @@ const Timer = (length: number) => {
         Push.Permission.request(()=>{}, ()=>{});
     }
 
-    const totalGoalMinutes = 6 * 60;
+    const [goalMinutes] = useLocalStorage("goalMinutes", "360");
+    const totalGoalMinutes = parseInt(goalMinutes);
 
     useEffect(() => {
         getAllSessions().then((data) => {
@@ -192,6 +193,7 @@ const DoneSession = (session: Session) => {
 
 export default function App() {
     const [length] = useLocalStorage("sessionLength", "25");
+
     return (
         <>
             <Header/>
