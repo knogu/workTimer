@@ -172,12 +172,10 @@ const DoneSession = (session: Session) => {
     const start = session.startTime
     const start_h = start.getHours()
     const start_m = padZero(start.getMinutes())
-    const start_s = padZero(start.getSeconds())
 
     const end = session.endTime
     const end_h = end.getHours()
     const end_m = padZero(end.getMinutes())
-    const end_s = padZero(end.getSeconds())
 
     const diff = end.getTime() - start.getTime()
     const diff_s = Math.floor(diff / 1000)
@@ -186,7 +184,7 @@ const DoneSession = (session: Session) => {
 
     return (
         <div>
-            <p>{start_h}:{start_m}:{start_s} - {end_h}:{end_m}:{end_s}  ({diff_m}m{diff_s_remain}s)</p>
+            <p>{start_h}:{start_m} - {end_h}:{end_m}  ({diff_m}m{diff_s_remain}s)</p>
         </div>
     );
 }
