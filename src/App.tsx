@@ -117,9 +117,9 @@ const Timer = (length: number) => {
     function startOrResume() {
         return (
             curSessionStartTime == null ?
-                <button onClick={onStart}>Start</button>
+                onStart
                 :
-                <button onClick={resume}>Resume</button>
+                resume
         )
     }
 
@@ -145,9 +145,9 @@ const Timer = (length: number) => {
             <div>
                 {
                     isRunning ?
-                        <button onClick={pause}>Pause</button>
+                        <button className="timer-button" onClick={pause}><i className="fa fa-pause"></i></button>
                         :
-                        startOrResume()
+                        <button className="timer-button" onClick={startOrResume()}><i className="fa fa-play"></i></button>
                 }
 
             </div>

@@ -19,3 +19,27 @@ body {
   font-weight: normal;
 }
 
+button {
+  background: none;       /* 背景色をリセット */
+  color: inherit;         /* 文字色を継承 */
+  border: none;           /* ボーダーをリセット */
+  padding: 0;             /* パディングをリセット */
+  margin: 0;              /* マージンをリセット */
+  font: inherit;          /* フォントスタイルを継承 */
+  cursor: pointer;        /* カーソルをポインタに設定 */
+  outline: inherit;       /* アウトラインを継承（フォーカス時に表示される枠） */
+  text-align: center;     /* テキストを中央揃えに設定 */
+  -webkit-appearance: none;  /* iOSやSafariのデフォルトスタイルを無効化 */
+  -moz-appearance: none;     /* Firefoxのデフォルトスタイルを無効化 */
+  appearance: none;       /* ボタンのデフォルトスタイルを無効化 */
+}
+
+.timer-button {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  background-color: white;
+  border: 1px solid black;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
