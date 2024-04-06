@@ -23,6 +23,10 @@ const doneSession3: Session = {
 const doneSessionListSample = [doneSession1, doneSession2, doneSession3]
 
 export const Records = () => {
+    return isProd() ? RecordsText() : RecordsGraph()
+}
+
+const RecordsGraph = () => {
     const divs = Array.from({ length: 12 }, (_, index) => index);
 
     const [doneSessionList, setDoneSessionList] = useState<Session[]>(doneSessionListSample);
@@ -73,7 +77,7 @@ const DoneSession = (session: Session) => {
     );
 }
 
-export const RecordsText = () => {
+const RecordsText = () => {
     const [doneSessionList, setDoneSessionList] = useState<Session[]>(doneSessionListSample);
     useEffect(() => {
         getAllSessions().then((data) => {

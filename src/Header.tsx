@@ -12,10 +12,7 @@ export default function Header() {
                     <Link to="/settings">settings</Link>
                 </div>
                 <div>
-                    <Link to="/records">records(graph)</Link>
-                </div>
-                <div>
-                    <Link to="/records-text">records(text)</Link>
+                    <Link to="/records">records</Link>
                 </div>
             </div>
         </header>

@@ -7,7 +7,7 @@ import {
     RouterProvider,
 } from "react-router-dom";
 import Settings from "./Config.tsx";
-import {Records, RecordsText} from "./Records.tsx";
+import {Records} from "./Records.tsx";
 
 const router = createBrowserRouter([
     {
@@ -21,10 +21,6 @@ const router = createBrowserRouter([
     {
         path: "/records",
         element: <Records/>,
-    },
-    {
-        path: "/records-text",
-        element: <RecordsText/>,
     },
 ]);
 
