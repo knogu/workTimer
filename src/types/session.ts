@@ -36,3 +36,31 @@ export async function getAllSessions(): Promise<Session[]> {
         return [];
     }
 }
+
+export async function getTotalMinutes(): Promise<number> {
+    const allSessions = await getAllSessions()
+    let totalMilliSec = 0
+    for (const session of allSessions) {
+        totalMilliSec += session.endTime.getTime() - session.startTime.getTime()
+    }
+    return Math.floor(totalMilliSec / (1000 * 60))
+}
+
+export const getSessionLengthMin = (session: Session) => {
+    const diffInMilliseconds: number = session.endTime.getTime() - session.startTime.getTime();
+    return Math.floor(diffInMilliseconds / (1000 * 60));
+}
+
+export const getMinDiff = (earlier: Date, later: Date) => {
+    const diffInMilliseconds: number = later.getTime() - earlier.getTime();
+    return diffInMilliseconds / (1000 * 60);
+}
+
+export const getHeight = (session: Session) => {
+    const minDiff = getSessionLengthMin(session)
+    return Math.floor(60 * minDiff / 60)
+}
+
+export const getTop = (session: Session) => {
+    return getMinDiff(new Date(2024, 3, 6, 8, 0), session.startTime)
+}

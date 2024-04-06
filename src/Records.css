@@ -16,3 +16,7 @@
     background-color: dodgerblue;
     position: absolute;
 }
+
+.finished-sessions {
+    text-align: center;
+}

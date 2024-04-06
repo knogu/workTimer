@@ -4,20 +4,10 @@ import {useEffect, useState} from "react";
 import Push from "push.js";
 import {useTimer} from "react-timer-hook";
 import {useLocalStorage} from "./LocalStorage.tsx";
-import {addSession, getAllSessions, Session} from "./types/session.ts"
+import {addSession, getSessionLengthMin, getTotalMinutes, Session} from "./types/session.ts"
 import Header from "./Header.tsx";
+import {displayedMinutes, padZero} from "./Util.ts";
 
-function padZero(n: number) {
-    let str = n.toString()
-    if (str.length === 1) {
-        str = "0" + str
-    }
-    return str
-}
-
-function displayedMinutes(minutes: number) {
-    return Math.floor(minutes/60).toString() + ":" + padZero(minutes % 60)
-}
 
 function timerString(minutes: number, seconds: number) {
     return minutes.toString() + ":" + padZero(seconds)
@@ -31,7 +21,6 @@ const Timer = (length: number) => {
     const expiryTimestamp = new Date();
     expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + amplifyIfProdEnv(length));
     const [curSessionStartTime, setCurSessionStartTime] = useState<Date | null>(null);
-    const [totalMinutes, setTotalMinutes] = useState<number>(0);
 
     const {
         seconds,
@@ -45,19 +34,18 @@ const Timer = (length: number) => {
         autoStart: false,
         expiryTimestamp,
         onExpire: () => {
+            // TODO: 停止してる間を考慮
             const doneSession: Session = {
                 startTime: curSessionStartTime!,
                 endTime: new Date(),
             }
 
             addSession(doneSession);
-            setDoneSessionList([...doneSessionList, doneSession])
-
+            setTotalMinutes((prev) => prev + getSessionLengthMin(doneSession))
             setCurSessionStartTime(null);
 
             const time = new Date();
             time.setSeconds(time.getSeconds() + amplifyIfProdEnv(length));
-            setTotalMinutes((prevTotalMinutes) => prevTotalMinutes + length);
 
             Push.create("Session finished", {
                 body: "Take a break",
@@ -92,10 +80,11 @@ const Timer = (length: number) => {
     const [goalMinutes] = useLocalStorage("goalMinutes", "360");
     const totalGoalMinutes = parseInt(goalMinutes);
 
-    const [doneSessionList, setDoneSessionList] = useState<Session[]>([]);
+    const [totalMinutes, setTotalMinutes] = useState(0);
+
     useEffect(() => {
-        getAllSessions().then((data) => {
-            setDoneSessionList(data)
+        getTotalMinutes().then((data) => {
+            setTotalMinutes(() => data)
         })
     }, []);
 
@@ -116,41 +105,11 @@ const Timer = (length: number) => {
             </div>
 
             <div><p>total {displayedMinutes(totalMinutes)} / {displayedMinutes(totalGoalMinutes)} ({(totalMinutes / totalGoalMinutes * 100).toFixed(0)} %)</p></div>
-
-            <div className="finished-sessions">
-                <h1>finished sessions</h1>
-                {   doneSessionList.length > 0 ?
-                    doneSessionList.map((doneSession) => {
-                        return DoneSession(doneSession)
-                    })
-                    :
-                    "no records yet"
-                }
-            </div>
         </div>
     );
 }
 
-const DoneSession = (session: Session) => {
-    const start = session.startTime
-    const start_h = start.getHours()
-    const start_m = padZero(start.getMinutes())
 
-    const end = session.endTime
-    const end_h = end.getHours()
-    const end_m = padZero(end.getMinutes())
-
-    const diff = end.getTime() - start.getTime()
-    const diff_s = Math.floor(diff / 1000)
-    const diff_s_remain = diff_s % 60
-    const diff_m = Math.floor(diff_s / 60)
-
-    return (
-        <div>
-            <p>{start_h}:{start_m} - {end_h}:{end_m}  ({diff_m}m{diff_s_remain}s)</p>
-        </div>
-    );
-}
 
 export default function App() {
     const [length] = useLocalStorage("sessionLength", "25");
