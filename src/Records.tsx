@@ -1,8 +1,9 @@
 import "./Records.css"
 
 import Header from "./Header.tsx";
-import {useEffect, useState} from "react";
+import {ChangeEvent, useEffect, useState} from "react";
 import {
+    addSession,
     getAllSessions,
     getMinDiff,
     getSessionLengthMin,
@@ -47,9 +48,13 @@ const getTop = (session: Session, pixPerMin: number, todayStartTime: Date) => {
     return pixPerMin * getMinDiff(todayStartTime, session.startTime)
 }
 
-const RecordsGraph = () => {
-    const divs = Array.from({ length: 12 }, (_, index) => index);
+const date2inputVal = (date: Date) => {
+    const hours: string = date.getHours().toString().padStart(2, '0');
+    const minutes: string = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
 
+const RecordsGraph = () => {
     const [todayDoneSessionList, setTodayDoneSessionList] = useState<Session[]>(doneSessionListSample)
     const [todayStartTime, setTodayStartTime] = useState<Date>(doneSession1.startTime)
 
@@ -80,20 +85,66 @@ const RecordsGraph = () => {
     const startTime = todayDoneSessionList[0]!.startTime
     const startTimeDisplay = startTime.getHours() + ":" + padZero(startTime.getMinutes())
 
+    const initStart = new Date()
+    initStart.setMinutes(initStart.getMinutes() - 25)
+    const [newRecordStartTime, setNewRecordStartTime] = useState<Date>(initStart)
+    const [newRecordEndTime, setNewRecordEndTime] = useState<Date>(new Date())
+
+    const handleNewRecordStartTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const [h, m] = event.target.value.split(':').map(Number);
+        setNewRecordStartTime((prev) => {
+            const newStart = new Date(prev.getTime())
+            newStart.setHours(h)
+            newStart.setMinutes(m)
+            return newStart
+        })
+    }
+
+    const handleNewRecordEndTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const [h, m] = event.target.value.split(':').map(Number);
+        setNewRecordEndTime((prev) => {
+            const newStart = new Date(prev.getTime())
+            newStart.setHours(h)
+            newStart.setMinutes(m)
+            return newStart
+        })
+    }
+
+    const handleAdd = () => {
+        const doneSession: Session = {
+            startTime: newRecordStartTime,
+            endTime: newRecordEndTime,
+        }
+
+        addSession(doneSession);
+        setTodayDoneSessionList((prev) => [...prev, doneSession])
+    }
+
     return (
         <>
             <Header/>
-            <div className="records">
-                {/*{divs.map((_, index) => (*/}
-                {/*    <div className={"base-hour starting-" + (8 + index).toString()} key={8 + index}></div>*/}
-                {/*))}*/}
+            <div className="records-bar">
                 <div className="startTime">{startTimeDisplay}</div>
 
                 {
                     todayDoneSessionList.map((session) => (
-                        <div className="doneSession" style={{top: getTop(session, pixPerMin, todayStartTime), height: getHeight(session, pixPerMin), right: 0}}></div>
+                        <div className="doneSession" style={{
+                            top: getTop(session, pixPerMin, todayStartTime),
+                            height: getHeight(session, pixPerMin),
+                            right: 0
+                        }}></div>
                     ))
                 }
+            </div>
+
+            <div className="add-record">
+                <label htmlFor="start-time">start time</label>
+                <input type="time" id="start-time" value={date2inputVal(newRecordStartTime)} onChange={handleNewRecordStartTimeChange}/>
+
+                <label htmlFor="end-time">end time</label>
+                <input type="time" id="end-time" value={date2inputVal(newRecordEndTime)} onChange={handleNewRecordEndTimeChange}/>
+
+                <button onClick={handleAdd}>Add</button>
             </div>
         </>
     );
@@ -115,7 +166,7 @@ const DoneSession = (session: Session) => {
 
     return (
         <div>
-            <p>{start_h}:{start_m} - {end_h}:{end_m}  ({diff_m}m{diff_s_remain}s)</p>
+            <p>{start_h}:{start_m} - {end_h}:{end_m} ({diff_m}m{diff_s_remain}s)</p>
         </div>
     );
 }
