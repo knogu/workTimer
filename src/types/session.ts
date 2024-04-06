@@ -37,6 +37,21 @@ export async function getAllSessions(): Promise<Session[]> {
     }
 }
 
+export async function getTodaySessions(): Promise<Session[]> {
+    try {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        return await db.table('sessions')
+            .where('startTime')
+            .aboveOrEqual(startOfDay)
+            .toArray();
+    } catch (error) {
+        console.error('今日のセッションの取得に失敗しました', error);
+        return [];
+    }
+}
+
 export async function getTotalMinutes(): Promise<number> {
     const allSessions = await getAllSessions()
     let totalMilliSec = 0
@@ -54,13 +69,4 @@ export const getSessionLengthMin = (session: Session) => {
 export const getMinDiff = (earlier: Date, later: Date) => {
     const diffInMilliseconds: number = later.getTime() - earlier.getTime();
     return diffInMilliseconds / (1000 * 60);
-}
-
-export const getHeight = (session: Session) => {
-    const minDiff = getSessionLengthMin(session)
-    return Math.floor(60 * minDiff / 60)
-}
-
-export const getTop = (session: Session) => {
-    return getMinDiff(new Date(2024, 3, 6, 8, 0), session.startTime)
 }

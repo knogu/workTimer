@@ -1,7 +1,15 @@
 .records {
-    width: 300px;
+    width: 30px;
     margin: 70px auto 0;
     position: relative;
+    border: 1px solid darkgray;
+    height: 720px;
+}
+
+.startTime {
+    position: absolute;
+    right: -40px;
+    top: -10px;
 }
 
 .base-hour {
@@ -12,7 +20,7 @@
 }
 
 .doneSession {
-    width: 300px;
+    width: 100%;
     background-color: dodgerblue;
     position: absolute;
 }

@@ -2,7 +2,13 @@ import "./Records.css"
 
 import Header from "./Header.tsx";
 import {useEffect, useState} from "react";
-import {getAllSessions, getHeight, getTop, Session} from "./types/session.ts";
+import {
+    getAllSessions,
+    getMinDiff,
+    getSessionLengthMin,
+    getTodaySessions,
+    Session
+} from "./types/session.ts";
 import {isProd, padZero} from "./Util.ts";
 
 const doneSession1: Session = {
@@ -26,29 +32,66 @@ export const Records = () => {
     return isProd() ? RecordsText() : RecordsGraph()
 }
 
+const getTimeInTwoHours = () => {
+    const t = new Date();
+    t.setHours(t.getHours() + 2)
+    return t;
+}
+
+const getHeight = (session: Session, pixPerMin: number) => {
+    const minDiff = getSessionLengthMin(session)
+    return pixPerMin * minDiff
+}
+
+const getTop = (session: Session, pixPerMin: number, todayStartTime: Date) => {
+    return pixPerMin * getMinDiff(todayStartTime, session.startTime)
+}
+
 const RecordsGraph = () => {
     const divs = Array.from({ length: 12 }, (_, index) => index);
 
-    const [doneSessionList, setDoneSessionList] = useState<Session[]>(doneSessionListSample);
+    const [todayDoneSessionList, setTodayDoneSessionList] = useState<Session[]>(doneSessionListSample)
+    const [todayStartTime, setTodayStartTime] = useState<Date>(doneSession1.startTime)
+
+    const [barEndTime, setBarEndTime] = useState<Date>(getTimeInTwoHours);
     useEffect(() => {
-        getAllSessions().then((data) => {
+        getTodaySessions().then((data) => {
             if (isProd()) {
-                setDoneSessionList(data)
+                setTodayDoneSessionList(data)
+                if (data.length > 0) {
+                    setTodayStartTime(() => data[0].startTime)
+                }
             }
         })
+
+        const timer = setInterval(() => {
+            setBarEndTime(getTimeInTwoHours());
+        }, 3000);
+
+        return () => {
+            clearInterval(timer);
+        };
     }, []);
+
+    const minutesLengthInBar = getMinDiff(todayStartTime, barEndTime)
+    const barLengthPixel = 720;
+    const pixPerMin = barLengthPixel / minutesLengthInBar;
+
+    const startTime = todayDoneSessionList[0]!.startTime
+    const startTimeDisplay = startTime.getHours() + ":" + padZero(startTime.getMinutes())
 
     return (
         <>
             <Header/>
             <div className="records">
-                {divs.map((_, index) => (
-                    <div className={"base-hour starting-" + (8 + index).toString()} key={8 + index}></div>
-                ))}
+                {/*{divs.map((_, index) => (*/}
+                {/*    <div className={"base-hour starting-" + (8 + index).toString()} key={8 + index}></div>*/}
+                {/*))}*/}
+                <div className="startTime">{startTimeDisplay}</div>
 
                 {
-                    doneSessionList.map((session) => (
-                        <div className="doneSession" style={{top: getTop(session), height: getHeight(session), right: 0}}></div>
+                    todayDoneSessionList.map((session) => (
+                        <div className="doneSession" style={{top: getTop(session, pixPerMin, todayStartTime), height: getHeight(session, pixPerMin), right: 0}}></div>
                     ))
                 }
             </div>
