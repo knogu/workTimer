@@ -33,3 +33,17 @@
 .finished-sessions {
     text-align: center;
 }
+
+.add-record {
+    margin-top: 30px;
+    margin-left: 15px;
+}
+
+.add-record input {
+    margin-right: 5px;
+    margin-left: 4px;
+}
+
+.add-record button {
+
+}

@@ -1,7 +1,7 @@
 body {
   margin: 0;
 }
-.main-container {
+.timer-container {
   width: 600px;
   margin: 80px auto 0;
   text-align: center;
@@ -42,4 +42,8 @@ button {
   border: 1px solid black;
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+.contents {
+  display: flex;
 }

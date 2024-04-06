@@ -7,6 +7,7 @@ import {useLocalStorage} from "./LocalStorage.tsx";
 import {addSession, getSessionLengthMin, getTotalMinutes, Session} from "./types/session.ts"
 import Header from "./Header.tsx";
 import {displayedMinutes, padZero} from "./Util.ts";
+import {RecordsBar} from "./Records.tsx";
 
 
 function timerString(minutes: number, seconds: number) {
@@ -89,7 +90,7 @@ const Timer = (length: number) => {
     }, []);
 
     return (
-        <div className="main-container">
+        <div className="timer-container">
             <div className="time">
                 {timerString(minutes, seconds)}
             </div>
@@ -117,8 +118,13 @@ export default function App() {
     return (
         <>
             <Header/>
-            <div>
-                {Timer(parseInt(length))}
+            <div className="contents">
+                <div className="graph-container">
+                    {RecordsBar()}
+                </div>
+                <div>
+                    {Timer(parseInt(length))}
+                </div>
             </div>
         </>
     );

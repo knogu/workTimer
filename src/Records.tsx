@@ -30,7 +30,7 @@ const doneSession3: Session = {
 const doneSessionListSample = [doneSession1, doneSession2, doneSession3]
 
 export const Records = () => {
-    return isProd() ? RecordsText() : RecordsGraph()
+    return isProd() ? RecordsText() : RecordsGraphPage()
 }
 
 const getTimeInTwoHours = () => {
@@ -62,7 +62,7 @@ const date2inputVal = (date: Date) => {
     return `${hours}:${minutes}`;
 }
 
-const RecordsGraph = () => {
+export const RecordsBar = () => {
     const [todayDoneSessionList, setTodayDoneSessionList] = useState<Session[]>(doneSessionListSample)
     const [todayStartTime, setTodayStartTime] = useState<Date>(doneSession1.startTime)
 
@@ -85,7 +85,6 @@ const RecordsGraph = () => {
     }, []);
 
 
-
     const minutesLengthInBar = getMinDiff(todayStartTime, barEndTime)
     const barLengthPixel = 720;
     const pixPerMin = barLengthPixel / minutesLengthInBar;
@@ -96,6 +95,45 @@ const RecordsGraph = () => {
     let hours = Array.from({ length: 24 }, (_, index) => index);
     hours = hours.filter(num => startTime.getHours() < num && num <= barEndTime.getHours());
 
+    return (
+        <>
+            <div className="records-bar">
+                <div className="startTime">{startTimeDisplay}</div>
+                {
+                    hours.map((h) => (
+                        <div className="hours-annotation"
+                             style={{top: getTopForHourAnnotation(h, pixPerMin, todayStartTime)}}>
+                            {h.toString() + ":00"}
+                        </div>
+                    ))
+                }
+
+                {
+                    todayDoneSessionList.map((session) => (
+                        <div className="doneSession" style={{
+                            top: getTop(session, pixPerMin, todayStartTime),
+                            height: getHeight(session, pixPerMin),
+                            right: 0
+                        }}></div>
+                    ))
+                }
+            </div>
+
+            {AddRecord(setTodayDoneSessionList)}
+        </>
+    )
+}
+
+export const RecordsGraphPage = () => {
+    return (
+        <>
+            <Header/>
+            {RecordsBar()}
+        </>
+    )
+}
+
+const AddRecord = (setDoneSessionList: React.Dispatch<React.SetStateAction<Session[]>>) => {
     const initStart = new Date()
     initStart.setMinutes(initStart.getMinutes() - 25)
     const [newRecordStartTime, setNewRecordStartTime] = useState<Date>(initStart)
@@ -128,45 +166,22 @@ const RecordsGraph = () => {
         }
 
         addSession(doneSession);
-        setTodayDoneSessionList((prev) => [...prev, doneSession])
+        setDoneSessionList((prev) => [...prev, doneSession])
     }
 
     return (
-        <>
-            <Header/>
-            <div className="records-bar">
-                <div className="startTime">{startTimeDisplay}</div>
+        <div className="add-record">
+            <label htmlFor="start-time">start time</label>
+            <input type="time" id="start-time" value={date2inputVal(newRecordStartTime)}
+                   onChange={handleNewRecordStartTimeChange}/>
 
-                {
-                    hours.map((h) => (
-                        <div className="hours-annotation" style={{top: getTopForHourAnnotation(h, pixPerMin, todayStartTime)}}>
-                            {h.toString() + ":00"}
-                        </div>
-                    ))
-                }
+            <label htmlFor="end-time">end time</label>
+            <input type="time" id="end-time" value={date2inputVal(newRecordEndTime)}
+                   onChange={handleNewRecordEndTimeChange}/>
 
-                {
-                    todayDoneSessionList.map((session) => (
-                        <div className="doneSession" style={{
-                            top: getTop(session, pixPerMin, todayStartTime),
-                            height: getHeight(session, pixPerMin),
-                            right: 0
-                        }}></div>
-                    ))
-                }
-            </div>
-
-            <div className="add-record">
-                <label htmlFor="start-time">start time</label>
-                <input type="time" id="start-time" value={date2inputVal(newRecordStartTime)} onChange={handleNewRecordStartTimeChange}/>
-
-                <label htmlFor="end-time">end time</label>
-                <input type="time" id="end-time" value={date2inputVal(newRecordEndTime)} onChange={handleNewRecordEndTimeChange}/>
-
-                <button onClick={handleAdd}>Add</button>
-            </div>
-        </>
-    );
+            <button onClick={handleAdd}><i className="fa fa-plus"></i></button>
+        </div>
+    )
 }
 
 const DoneSession = (session: Session) => {
