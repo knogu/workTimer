@@ -89,7 +89,9 @@ export const RecordsBar = () => {
     const barLengthPixel = 720;
     const pixPerMin = barLengthPixel / minutesLengthInBar;
 
-    const startTime = todayDoneSessionList[0]!.startTime
+    const defaultStartTime = new Date()
+    defaultStartTime.setHours(8)
+    const startTime = todayDoneSessionList[0] ? todayDoneSessionList[0].startTime : defaultStartTime
     const startTimeDisplay = startTime.getHours() + ":" + padZero(startTime.getMinutes())
 
     let hours = Array.from({ length: 24 }, (_, index) => index);
