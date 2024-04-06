@@ -9,3 +9,7 @@ export function padZero(n: number) {
 export function displayedMinutes(minutes: number) {
     return Math.floor(minutes/60).toString() + ":" + padZero(minutes % 60)
 }
+
+export function isProd() {
+    return import.meta.env.MODE === 'production'
+}

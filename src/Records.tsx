@@ -2,8 +2,8 @@ import "./Records.css"
 
 import Header from "./Header.tsx";
 import {useEffect, useState} from "react";
-import {getHeight, getTop, Session} from "./types/session.ts";
-import {padZero} from "./Util.ts";
+import {getAllSessions, getHeight, getTop, Session} from "./types/session.ts";
+import {isProd, padZero} from "./Util.ts";
 
 const doneSession1: Session = {
     startTime: new Date(2024, 3, 6, 8, 0),
@@ -25,13 +25,14 @@ const doneSessionListSample = [doneSession1, doneSession2, doneSession3]
 export const Records = () => {
     const divs = Array.from({ length: 12 }, (_, index) => index);
 
-    const [doneSessionList, setDoneSessionList] =
-        useState<Session[]>(doneSessionListSample);
-    // useEffect(() => {
-    //     getAllSessions().then((data) => {
-    //         setDoneSessionList(data)
-    //     })
-    // }, []);
+    const [doneSessionList, setDoneSessionList] = useState<Session[]>(doneSessionListSample);
+    useEffect(() => {
+        getAllSessions().then((data) => {
+            if (isProd()) {
+                setDoneSessionList(data)
+            }
+        })
+    }, []);
 
     return (
         <>
@@ -42,8 +43,7 @@ export const Records = () => {
                 ))}
 
                 {
-                    doneSessionList.map((session, _) => (
-
+                    doneSessionList.map((session) => (
                         <div className="doneSession" style={{top: getTop(session), height: getHeight(session), right: 0}}></div>
                     ))
                 }
@@ -74,7 +74,14 @@ const DoneSession = (session: Session) => {
 }
 
 export const RecordsText = () => {
-    const doneSessionList = doneSessionListSample
+    const [doneSessionList, setDoneSessionList] = useState<Session[]>(doneSessionListSample);
+    useEffect(() => {
+        getAllSessions().then((data) => {
+            if (isProd()) {
+                setDoneSessionList(data)
+            }
+        })
+    }, []);
     return (
         <>
             <Header/>
