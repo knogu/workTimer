@@ -4,45 +4,8 @@ import {useEffect, useState} from "react";
 import Push from "push.js";
 import {useTimer} from "react-timer-hook";
 import {useLocalStorage} from "./LocalStorage.tsx";
+import {addSession, getAllSessions, Session} from "./types/session.ts"
 import Header from "./Header.tsx";
-import Dexie from 'dexie';
-
-type Session = {
-    startTime: Date;
-    endTime: Date;
-}
-
-class Database extends Dexie {
-    public sessions: Dexie.Table<Session, number>;
-
-    public constructor() {
-        super('Database');
-        this.version(1).stores({
-            sessions: '++id, startTime, endTime',
-        });
-        this.sessions = this.table('sessions');
-    }
-}
-
-const db = new Database();
-
-async function addSession(session: Session) {
-    try {
-        await db.sessions.add(session);
-        console.log("added")
-    } catch (error) {
-        console.error(error);
-    }
-}
-
-async function getAllSessions(): Promise<Session[]> {
-    try {
-        return await db.sessions.toArray();
-    } catch (error) {
-        console.error(error);
-        return [];
-    }
-}
 
 function padZero(n: number) {
     let str = n.toString()
@@ -68,7 +31,6 @@ const Timer = (length: number) => {
     const expiryTimestamp = new Date();
     expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + amplifyIfProdEnv(length));
     const [curSessionStartTime, setCurSessionStartTime] = useState<Date | null>(null);
-    const [doneSessionList, setDoneSessionList] = useState<Session[]>([]);
     const [totalMinutes, setTotalMinutes] = useState<number>(0);
 
     const {
@@ -130,6 +92,7 @@ const Timer = (length: number) => {
     const [goalMinutes] = useLocalStorage("goalMinutes", "360");
     const totalGoalMinutes = parseInt(goalMinutes);
 
+    const [doneSessionList, setDoneSessionList] = useState<Session[]>([]);
     useEffect(() => {
         getAllSessions().then((data) => {
             setDoneSessionList(data)
