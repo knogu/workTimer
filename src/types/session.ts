@@ -22,7 +22,6 @@ const db = new Database();
 export async function addSession(session: Session) {
     try {
         await db.sessions.add(session);
-        console.log("added")
     } catch (error) {
         console.error(error);
     }
@@ -47,7 +46,6 @@ export async function getTodaySessions(): Promise<Session[]> {
             .aboveOrEqual(startOfDay)
             .toArray();
     } catch (error) {
-        console.error('今日のセッションの取得に失敗しました', error);
         return [];
     }
 }

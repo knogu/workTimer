@@ -48,6 +48,14 @@ const getTop = (session: Session, pixPerMin: number, todayStartTime: Date) => {
     return pixPerMin * getMinDiff(todayStartTime, session.startTime)
 }
 
+const getTopForHourAnnotation = (h: number, pixPerMin: number, todayStartTime: Date) => {
+    const hourDate = new Date()
+    hourDate.setHours(h)
+    hourDate.setMinutes(0)
+    hourDate.setSeconds(0)
+    return pixPerMin * getMinDiff(todayStartTime, hourDate) - 10
+}
+
 const date2inputVal = (date: Date) => {
     const hours: string = date.getHours().toString().padStart(2, '0');
     const minutes: string = date.getMinutes().toString().padStart(2, '0');
@@ -61,11 +69,9 @@ const RecordsGraph = () => {
     const [barEndTime, setBarEndTime] = useState<Date>(getTimeInTwoHours);
     useEffect(() => {
         getTodaySessions().then((data) => {
-            if (isProd()) {
-                setTodayDoneSessionList(data)
-                if (data.length > 0) {
-                    setTodayStartTime(() => data[0].startTime)
-                }
+            setTodayDoneSessionList(data)
+            if (data.length > 0) {
+                setTodayStartTime(() => data[0].startTime)
             }
         })
 
@@ -78,12 +84,17 @@ const RecordsGraph = () => {
         };
     }, []);
 
+
+
     const minutesLengthInBar = getMinDiff(todayStartTime, barEndTime)
     const barLengthPixel = 720;
     const pixPerMin = barLengthPixel / minutesLengthInBar;
 
     const startTime = todayDoneSessionList[0]!.startTime
     const startTimeDisplay = startTime.getHours() + ":" + padZero(startTime.getMinutes())
+
+    let hours = Array.from({ length: 24 }, (_, index) => index);
+    hours = hours.filter(num => startTime.getHours() < num && num <= barEndTime.getHours());
 
     const initStart = new Date()
     initStart.setMinutes(initStart.getMinutes() - 25)
@@ -125,6 +136,14 @@ const RecordsGraph = () => {
             <Header/>
             <div className="records-bar">
                 <div className="startTime">{startTimeDisplay}</div>
+
+                {
+                    hours.map((h) => (
+                        <div className="hours-annotation" style={{top: getTopForHourAnnotation(h, pixPerMin, todayStartTime)}}>
+                            {h.toString() + ":00"}
+                        </div>
+                    ))
+                }
 
                 {
                     todayDoneSessionList.map((session) => (
@@ -175,9 +194,7 @@ const RecordsText = () => {
     const [doneSessionList, setDoneSessionList] = useState<Session[]>(doneSessionListSample);
     useEffect(() => {
         getAllSessions().then((data) => {
-            if (isProd()) {
-                setDoneSessionList(data)
-            }
+            setDoneSessionList(data)
         })
     }, []);
     return (

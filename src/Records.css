@@ -8,8 +8,13 @@
 
 .startTime {
     position: absolute;
-    right: -40px;
+    right: -50px;
     top: -10px;
+}
+
+.hours-annotation {
+    position: absolute;
+    right: -50px;
 }
 
 .base-hour {
