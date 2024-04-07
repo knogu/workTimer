@@ -12,23 +12,6 @@ import {
 } from "./types/session.ts";
 import {isProd, padZero} from "./Util.ts";
 
-const doneSession1: Session = {
-    startTime: new Date(2024, 3, 6, 8, 0),
-    endTime: new Date(2024, 3, 6, 8, 15),
-}
-
-const doneSession2: Session = {
-    startTime: new Date(2024, 3, 6, 8, 50),
-    endTime: new Date(2024, 3, 6, 9, 0),
-}
-
-const doneSession3: Session = {
-    startTime: new Date(2024, 3, 6, 9, 10),
-    endTime: new Date(2024, 3, 6, 10, 0),
-}
-
-const doneSessionListSample = [doneSession1, doneSession2, doneSession3]
-
 export const Records = () => {
     return isProd() ? RecordsText() : RecordsGraphPage()
 }
@@ -63,8 +46,10 @@ const date2inputVal = (date: Date) => {
 }
 
 export const RecordsBar = () => {
-    const [todayDoneSessionList, setTodayDoneSessionList] = useState<Session[]>(doneSessionListSample)
-    const [todayStartTime, setTodayStartTime] = useState<Date>(doneSession1.startTime)
+    const [todayDoneSessionList, setTodayDoneSessionList] = useState<Session[]>([])
+    const defaultStartTime = new Date()
+    defaultStartTime.setHours(8)
+    const [todayStartTime, setTodayStartTime] = useState<Date>(defaultStartTime)
 
     const [barEndTime, setBarEndTime] = useState<Date>(getTimeInTwoHours);
     useEffect(() => {
@@ -89,13 +74,10 @@ export const RecordsBar = () => {
     const barLengthPixel = 720;
     const pixPerMin = barLengthPixel / minutesLengthInBar;
 
-    const defaultStartTime = new Date()
-    defaultStartTime.setHours(8)
-    const startTime = todayDoneSessionList[0] ? todayDoneSessionList[0].startTime : defaultStartTime
-    const startTimeDisplay = startTime.getHours() + ":" + padZero(startTime.getMinutes())
+    const startTimeDisplay = todayStartTime.getHours() + ":" + padZero(todayStartTime.getMinutes())
 
     let hours = Array.from({ length: 24 }, (_, index) => index);
-    hours = hours.filter(num => startTime.getHours() < num && num <= barEndTime.getHours());
+    hours = hours.filter(num => todayStartTime.getHours() < num && num <= barEndTime.getHours());
 
     return (
         <>
@@ -208,7 +190,7 @@ const DoneSession = (session: Session) => {
 }
 
 const RecordsText = () => {
-    const [doneSessionList, setDoneSessionList] = useState<Session[]>(doneSessionListSample);
+    const [doneSessionList, setDoneSessionList] = useState<Session[]>([]);
     useEffect(() => {
         getAllSessions().then((data) => {
             setDoneSessionList(data)
