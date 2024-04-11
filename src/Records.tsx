@@ -62,7 +62,7 @@ export const RecordsBar = () => {
 
         const timer = setInterval(() => {
             setBarEndTime(getTimeInTwoHours());
-        }, 3000);
+        }, 100000);
 
         return () => {
             clearInterval(timer);

@@ -2,25 +2,21 @@ import './App.css';
 
 import {useEffect, useState} from "react";
 import Push from "push.js";
-import {useTimer} from "react-timer-hook";
 import {addSession, getSessionLengthMin, getSettings, getTotalMinutes, Session, Settings} from "./types/session.ts"
-import {displayedMinutes, padZero} from "./Util.ts";
+import {amplifyIfProdEnv, displayedMinutes, padZero} from "./Util.ts";
 import {RecordsBar} from "./Records.tsx";
 import Header from "./Header.tsx";
+import {useRecoilState} from "recoil";
+import {currentStartTimeState, settingsState} from "./state.ts";
+import useTimer from "./react-timer-hook/useTimer.ts";
 
 
 function timerString(minutes: number, seconds: number) {
     return minutes.toString() + ":" + padZero(seconds)
 }
 
-function amplifyIfProdEnv(n: number) {
-    return import.meta.env.MODE === 'production' ? n * 60 : n
-}
-
 const Timer = (settings: Settings) => {
-    const expiryTimestamp = new Date();
-    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + amplifyIfProdEnv(settings.sessionLengthMin));
-    const [curSessionStartTime, setCurSessionStartTime] = useState<Date | null>(null);
+    const [curSessionStartTime, setCurSessionStartTime] = useRecoilState(currentStartTimeState);
 
     const {
         seconds,
@@ -32,7 +28,6 @@ const Timer = (settings: Settings) => {
         restart,
     } = useTimer({
         autoStart: false,
-        expiryTimestamp,
         onExpire: () => {
             // TODO: 停止してる間を考慮
             const doneSession: Session = {
@@ -86,30 +81,37 @@ const Timer = (settings: Settings) => {
     }, []);
 
     return (
-        <div className="timer-container">
-            <div className="time">
-                {timerString(minutes, seconds)}
+        <div className="contents">
+            <div className="graph-container">
+                {RecordsBar()}
             </div>
-
             <div>
-                {
-                    isRunning ?
-                        <button className="timer-button" onClick={pause}><i className="fa fa-pause"></i></button>
-                        :
-                        <button className="timer-button" onClick={startOrResume()}><i className="fa fa-play"></i></button>
-                }
+                <div className="timer-container">
+                    <div className="time">
+                        {timerString(minutes, seconds)}
+                    </div>
 
+                    <div>
+                        {
+                            isRunning ?
+                                <button className="timer-button" onClick={pause}><i className="fa fa-pause"></i></button>
+                                :
+                                <button className="timer-button" onClick={startOrResume()}><i className="fa fa-play"></i></button>
+                        }
+
+                    </div>
+
+                    <div><p>total {displayedMinutes(totalMinutes)} / {displayedMinutes(settings.goalMinutes)} ({(totalMinutes / settings.goalMinutes * 100).toFixed(0)} %)</p></div>
+                </div>
             </div>
-
-            <div><p>total {displayedMinutes(totalMinutes)} / {displayedMinutes(settings.goalMinutes)} ({(totalMinutes / settings.goalMinutes * 100).toFixed(0)} %)</p></div>
         </div>
+
+
     );
 }
 
 export const TimerPage = () => {
-    // todo: get/set settings via recoil
-    const initSettings: Settings = {sessionLengthMin: 25, goalMinutes: 360, id: 1};
-    const [settings, setSettings] = useState(initSettings);
+    const [settings, setSettings] = useRecoilState(settingsState);
     useEffect(() => {
         getSettings().then((fetchedSettings) => {
             setSettings(fetchedSettings)
@@ -118,14 +120,7 @@ export const TimerPage = () => {
     return (
         <>
             <Header/>
-            <div className="contents">
-                <div className="graph-container">
-                    {RecordsBar()}
-                </div>
-                <div>
-                    {Timer(settings)}
-                </div>
-            </div>
+            {Timer(settings)}
         </>
     )
 }

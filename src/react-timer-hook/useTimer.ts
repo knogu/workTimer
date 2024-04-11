@@ -1,9 +1,12 @@
-import { useState, useCallback } from 'react';
+import {useState, useCallback, useEffect} from 'react';
 import { Time, Validate } from './utils';
 import { useInterval } from './hooks';
+import {useRecoilState} from "recoil";
+import {expiryState, isRunningState, secondsState} from "../state.js";
+import {TimerSettings} from "./index";
 
 const DEFAULT_DELAY = 1000;
-function getDelayFromExpiryTimestamp(expiryTimestamp) {
+function getDelayFromExpiryTimestamp(expiryTimestamp: Date) {
   if (!Validate.expiryTimestamp(expiryTimestamp)) {
     return null;
   }
@@ -13,10 +16,14 @@ function getDelayFromExpiryTimestamp(expiryTimestamp) {
   return extraMilliSeconds > 0 ? extraMilliSeconds : DEFAULT_DELAY;
 }
 
-export default function useTimer({ expiryTimestamp: expiry, onExpire, autoStart = true } = {}) {
-  const [expiryTimestamp, setExpiryTimestamp] = useState(expiry);
-  const [seconds, setSeconds] = useState(Time.getSecondsFromExpiry(expiryTimestamp));
-  const [isRunning, setIsRunning] = useState(autoStart);
+export default function useTimer({ onExpire, autoStart = false }: TimerSettings) {
+  const [seconds, setSeconds] = useRecoilState(secondsState);
+  const [expiryTimestamp, setExpiryTimestamp] = useRecoilState(expiryState);
+  useEffect(() => {
+    const expiry = new Date()
+    expiry.setSeconds(expiry.getSeconds() + seconds)
+  }, []);
+  const [isRunning, setIsRunning] = useRecoilState(isRunningState);
   const [didStart, setDidStart] = useState(autoStart);
   const [delay, setDelay] = useState(getDelayFromExpiryTimestamp(expiryTimestamp));
 

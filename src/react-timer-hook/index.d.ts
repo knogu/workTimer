@@ -1,6 +1,5 @@
 interface TimerSettings {
     autoStart?: boolean;
-    expiryTimestamp: Date;
     onExpire?: () => void;
 }
 

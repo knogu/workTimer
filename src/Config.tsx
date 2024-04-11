@@ -1,11 +1,20 @@
 import './Config.css'
 import {putSettings, Settings} from "./types/session.ts";
+import {useRecoilState} from "recoil";
+import {settingsState} from "./state.ts";
+import Header from "./Header.tsx";
 
 export default function SettingsPage() {
-    // todo: recoil
+    const [settings, setSettings] = useRecoilState(settingsState);
+
+    const onSettingsChange = (newSettings: Settings) => {
+        setSettings(newSettings)
+        putSettings(newSettings)
+    }
 
     return (
         <>
+            <Header/>
             <div className="settings-container">
                 <div className="config-item">
                     <label htmlFor="length">length</label>
