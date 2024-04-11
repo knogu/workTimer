@@ -3,11 +3,10 @@ import './App.css';
 import {useEffect, useState} from "react";
 import Push from "push.js";
 import {useTimer} from "react-timer-hook";
-import {useLocalStorage} from "./LocalStorage.tsx";
-import {addSession, getSessionLengthMin, getTotalMinutes, Session} from "./types/session.ts"
-import Header from "./Header.tsx";
+import {addSession, getSessionLengthMin, getSettings, getTotalMinutes, Session, Settings} from "./types/session.ts"
 import {displayedMinutes, padZero} from "./Util.ts";
 import {RecordsBar} from "./Records.tsx";
+import Header from "./Header.tsx";
 
 
 function timerString(minutes: number, seconds: number) {
@@ -18,9 +17,9 @@ function amplifyIfProdEnv(n: number) {
     return import.meta.env.MODE === 'production' ? n * 60 : n
 }
 
-const Timer = (length: number) => {
+const Timer = (settings: Settings) => {
     const expiryTimestamp = new Date();
-    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + amplifyIfProdEnv(length));
+    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + amplifyIfProdEnv(settings.sessionLengthMin));
     const [curSessionStartTime, setCurSessionStartTime] = useState<Date | null>(null);
 
     const {
@@ -78,9 +77,6 @@ const Timer = (length: number) => {
         Push.Permission.request(()=>{}, ()=>{});
     }
 
-    const [goalMinutes] = useLocalStorage("goalMinutes", "360");
-    const totalGoalMinutes = parseInt(goalMinutes);
-
     const [totalMinutes, setTotalMinutes] = useState(0);
 
     useEffect(() => {
@@ -105,16 +101,20 @@ const Timer = (length: number) => {
 
             </div>
 
-            <div><p>total {displayedMinutes(totalMinutes)} / {displayedMinutes(totalGoalMinutes)} ({(totalMinutes / totalGoalMinutes * 100).toFixed(0)} %)</p></div>
+            <div><p>total {displayedMinutes(totalMinutes)} / {displayedMinutes(settings.goalMinutes)} ({(totalMinutes / settings.goalMinutes * 100).toFixed(0)} %)</p></div>
         </div>
     );
 }
 
-
-
-export default function App() {
-    const [length] = useLocalStorage("sessionLength", "25");
-
+export const TimerPage = () => {
+    // todo: get/set settings via recoil
+    const initSettings: Settings = {sessionLengthMin: 25, goalMinutes: 360, id: 1};
+    const [settings, setSettings] = useState(initSettings);
+    useEffect(() => {
+        getSettings().then((fetchedSettings) => {
+            setSettings(fetchedSettings)
+        })
+    }, []);
     return (
         <>
             <Header/>
@@ -123,9 +123,9 @@ export default function App() {
                     {RecordsBar()}
                 </div>
                 <div>
-                    {Timer(parseInt(length))}
+                    {Timer(settings)}
                 </div>
             </div>
         </>
-    );
+    )
 }

@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
 import './index.css'
 import {
     createBrowserRouter,
@@ -8,11 +7,12 @@ import {
 } from "react-router-dom";
 import Settings from "./Config.tsx";
 import {Records} from "./Records.tsx";
+import {TimerPage} from "./App.tsx";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <App/>,
+        element: <TimerPage/>,
     },
     {
         path: "/settings",

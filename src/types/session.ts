@@ -6,14 +6,17 @@ export type Session = {
 }
 
 class Database extends Dexie {
-    public sessions: Dexie.Table<Session, number>;
+    public sessions: Dexie.Table<Session, number>
+    public settings: Dexie.Table<Settings, number>
 
     public constructor() {
         super('Database');
         this.version(1).stores({
             sessions: '++id, startTime, endTime',
+            settings: '++id, sessionLengthMin, goalMinutes',
         });
-        this.sessions = this.table('sessions');
+        this.sessions = this.table('sessions')
+        this.settings = this.table('settings')
     }
 }
 
@@ -67,4 +70,27 @@ export const getSessionLengthMin = (session: Session) => {
 export const getMinDiff = (earlier: Date, later: Date) => {
     const diffInMilliseconds: number = later.getTime() - earlier.getTime();
     return diffInMilliseconds / (1000 * 60);
+}
+
+export type Settings = {
+    id: number;
+    sessionLengthMin: number;
+    goalMinutes: number;
+}
+
+export async function putSettings(settings: Settings) {
+    return db.settings.put({ ...settings, id: 1})
+}
+
+export async function getSettings() {
+    return db.settings.get(1).then((res) => {
+            if (res === undefined) {
+                const newSetting = {sessionLengthMin: 25, goalMinutes: 360, id:1}
+                putSettings(newSetting)
+                return newSetting
+            } else {
+                return res!
+            }
+        }
+    )
 }
