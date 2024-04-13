@@ -120,7 +120,8 @@ export const RecordsBar = () => {
                                      position: "absolute",
                                      top: getTop(session.startTime, pixPerMin, todayStartTime),
                                      height: getHeight(session, pixPerMin),
-                                     right: 0
+                                     width: index === focusedDoneSession ? 25 : 20,
+                                     right: index === focusedDoneSession ? -2.5 : 0,
                                  }}></div>
                             {focusedDoneSession === index ?
                                 <div className="focusedDoneSession" style={{
