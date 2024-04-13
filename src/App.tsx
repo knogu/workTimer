@@ -1,13 +1,18 @@
 import './App.css';
 
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import Push from "push.js";
-import {addSession, getSessionLengthMin, getSettings, getTotalMinutes, Session, Settings} from "./types/session.ts"
+import {
+    addSessionToDb,
+    getSettings, getTodaySessions,
+    Session, sessionMinutesSum,
+    Settings
+} from "./types/session.ts"
 import {amplifyIfProdEnv, displayedMinutes, padZero} from "./Util.ts";
 import {RecordsBar} from "./Records.tsx";
 import Header from "./Header.tsx";
 import {useRecoilState} from "recoil";
-import {currentStartTimeState, settingsState} from "./state.ts";
+import {currentStartTimeState, settingsState, todayDoneSessionListState} from "./state.ts";
 import useTimer from "./react-timer-hook/useTimer.ts";
 
 
@@ -16,8 +21,8 @@ function timerString(minutes: number, seconds: number) {
 }
 
 const Timer = (settings: Settings) => {
-    console.log("timer called")
-    const [curSessionStartTime, setCurSessionStartTime] = useRecoilState(currentStartTimeState);
+    const [curSessionStartTime, setCurSessionStartTime] = useRecoilState(currentStartTimeState)
+    const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
 
     const {
         seconds,
@@ -35,8 +40,8 @@ const Timer = (settings: Settings) => {
                 endTime: new Date(),
             }
 
-            addSession(doneSession);
-            setTotalMinutes((prev) => prev + getSessionLengthMin(doneSession))
+            addSessionToDb(doneSession);
+            setTodayDoneSessionList((prev) => [...prev, doneSession])
             setCurSessionStartTime(null);
 
             const time = new Date();
@@ -72,12 +77,8 @@ const Timer = (settings: Settings) => {
         Push.Permission.request(()=>{}, ()=>{});
     }
 
-    const [totalMinutes, setTotalMinutes] = useState(0);
-
     useEffect(() => {
-        getTotalMinutes().then((data) => {
-            setTotalMinutes(() => data)
-        })
+        getTodaySessions().then((sessions) => setTodayDoneSessionList(sessions))
     }, []);
 
     return (
@@ -101,7 +102,7 @@ const Timer = (settings: Settings) => {
 
                     </div>
 
-                    <div><p>total {displayedMinutes(totalMinutes)} / {displayedMinutes(settings.goalMinutes)} ({(totalMinutes / settings.goalMinutes * 100).toFixed(0)} %)</p></div>
+                    <div><p>total {displayedMinutes(sessionMinutesSum(todayDoneSessionList))} / {displayedMinutes(settings.goalMinutes)} ({(sessionMinutesSum(todayDoneSessionList) / settings.goalMinutes * 100).toFixed(0)} %)</p></div>
                 </div>
             </div>
         </div>

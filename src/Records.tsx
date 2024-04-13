@@ -3,14 +3,15 @@ import "./Records.css"
 import Header from "./Header.tsx";
 import {ChangeEvent, useEffect, useState} from "react";
 import {
-    addSession,
-    getAllSessions,
+    addSessionToDb,
     getMinDiff,
     getSessionLengthMin,
     getTodaySessions,
     Session
 } from "./types/session.ts";
 import {isProd, padZero} from "./Util.ts";
+import {useRecoilState} from "recoil";
+import {todayDoneSessionListState} from "./state.ts";
 
 export const Records = () => {
     return isProd() ? RecordsText() : RecordsGraphPage()
@@ -46,9 +47,7 @@ const date2inputVal = (date: Date) => {
 }
 
 export const RecordsBar = () => {
-    const [todayDoneSessionList, setTodayDoneSessionList] = useState<Session[]>([])
-    // const defaultStartTime = new Date()
-    // defaultStartTime.setHours(8)
+    const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
     const [todayStartTime, setTodayStartTime] = useState<Date>(new Date())
 
     const [barEndTime, setBarEndTime] = useState<Date>(getTimeInTwoHours);
@@ -152,8 +151,10 @@ const AddRecord = (setDoneSessionList: React.Dispatch<React.SetStateAction<Sessi
             endTime: newRecordEndTime,
         }
 
-        addSession(doneSession);
-        setDoneSessionList((prev) => [...prev, doneSession])
+        addSessionToDb(doneSession);
+        setDoneSessionList((prev) =>
+            [...prev, doneSession].sort((a, b)=>a.startTime.getTime() - b.startTime.getTime())
+        )
     }
 
     return (
@@ -195,7 +196,7 @@ const DoneSession = (session: Session) => {
 const RecordsText = () => {
     const [doneSessionList, setDoneSessionList] = useState<Session[]>([]);
     useEffect(() => {
-        getAllSessions().then((data) => {
+        getTodaySessions().then((data) => {
             setDoneSessionList(data)
         })
     }, []);

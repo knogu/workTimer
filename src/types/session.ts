@@ -22,7 +22,7 @@ class Database extends Dexie {
 
 const db = new Database();
 
-export async function addSession(session: Session) {
+export async function addSessionToDb(session: Session) {
     try {
         await db.sessions.add(session);
     } catch (error) {
@@ -60,6 +60,18 @@ export async function getTotalMinutes(): Promise<number> {
         totalMilliSec += session.endTime.getTime() - session.startTime.getTime()
     }
     return Math.floor(totalMilliSec / (1000 * 60))
+}
+
+export const sessionMinutesSum = (sessions: Session[]) => {
+    let totalMilliSec = 0
+    for (const session of sessions) {
+        totalMilliSec += session.endTime.getTime() - session.startTime.getTime()
+    }
+    return Math.floor(totalMilliSec / (1000 * 60))
+}
+
+export async function getTodayTotalMinutes(): Promise<number> {
+    return sessionMinutesSum(await getTodaySessions())
 }
 
 export const getSessionLengthMin = (session: Session) => {

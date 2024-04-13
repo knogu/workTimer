@@ -1,10 +1,10 @@
 import {useState, useCallback, useEffect} from 'react';
-import { Time } from './utils';
-import { useInterval } from './hooks';
 import {useRecoilState} from "recoil";
 import {didStartState, expiryState, isRunningState, secondsState} from "../state.js";
 import {getSettings} from "../types/session.ts";
 import {amplifyIfProdEnv} from "../Util.ts";
+import useInterval from "./useInterval.ts";
+import Time from "./Time.ts";
 
 const DEFAULT_DELAY = 1000;
 
@@ -40,6 +40,7 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   }, []);
 
   const handleExpire = useCallback(() => {
+    onExpire()
     setIsRunning(false);
     setDelay(null);
   }, [onExpire]);

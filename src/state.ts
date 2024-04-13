@@ -1,5 +1,5 @@
-import { atom } from "recoil";
-import {Settings} from "./types/session.ts";
+import {atom, selector} from "recoil";
+import {Session, sessionMinutesSum, Settings} from "./types/session.ts";
 import {amplifyIfProdEnv} from "./Util.ts";
 
 const initSettings: Settings = {sessionLengthMin: 25, goalMinutes: 360, id: 1};
@@ -36,4 +36,16 @@ export const didStartState = atom({
 export const currentStartTimeState = atom<Date | null>({
     key: "currentStartTimeState",
     default: null
+})
+
+export const todayDoneSessionListState = atom<Session[]>({
+    key: "todayDoneSessionListState",
+    default: []
+})
+
+export const todayTotalMinutesSelector = selector({
+    key: "todayTotalMinutesSelector",
+    get: ({ get }) => {
+        return sessionMinutesSum(get(todayDoneSessionListState))
+    }
 })
