@@ -28,6 +28,11 @@ export const isRunningState = atom({
     default: false
 })
 
+export const didStartState = atom({
+    key: "didStartState",
+    default: false
+})
+
 export const currentStartTimeState = atom<Date | null>({
     key: "currentStartTimeState",
     default: null

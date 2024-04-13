@@ -16,6 +16,7 @@ function timerString(minutes: number, seconds: number) {
 }
 
 const Timer = (settings: Settings) => {
+    console.log("timer called")
     const [curSessionStartTime, setCurSessionStartTime] = useRecoilState(currentStartTimeState);
 
     const {
@@ -26,9 +27,8 @@ const Timer = (settings: Settings) => {
         pause,
         resume,
         restart,
-    } = useTimer({
-        autoStart: false,
-        onExpire: () => {
+    } = useTimer(
+        () => {
             // TODO: 停止してる間を考慮
             const doneSession: Session = {
                 startTime: curSessionStartTime!,
@@ -52,7 +52,7 @@ const Timer = (settings: Settings) => {
 
             restart(time, false)
         },
-    });
+    );
 
     function onStart() {
         setCurSessionStartTime(new Date());

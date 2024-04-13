@@ -47,27 +47,30 @@ const date2inputVal = (date: Date) => {
 
 export const RecordsBar = () => {
     const [todayDoneSessionList, setTodayDoneSessionList] = useState<Session[]>([])
-    const defaultStartTime = new Date()
-    defaultStartTime.setHours(8)
-    const [todayStartTime, setTodayStartTime] = useState<Date>(defaultStartTime)
+    // const defaultStartTime = new Date()
+    // defaultStartTime.setHours(8)
+    const [todayStartTime, setTodayStartTime] = useState<Date>(new Date())
 
     const [barEndTime, setBarEndTime] = useState<Date>(getTimeInTwoHours);
     useEffect(() => {
         getTodaySessions().then((data) => {
             setTodayDoneSessionList(data)
-            if (data.length > 0) {
-                setTodayStartTime(() => data[0].startTime)
-            }
         })
 
         const timer = setInterval(() => {
             setBarEndTime(getTimeInTwoHours());
-        }, 100000);
+        }, 1000000);
 
         return () => {
             clearInterval(timer);
         };
     }, []);
+
+    useEffect(() => {
+        if (todayDoneSessionList.length > 0) {
+            setTodayStartTime(() => todayDoneSessionList[0].startTime)
+        }
+    }, [todayDoneSessionList]);
 
 
     const minutesLengthInBar = getMinDiff(todayStartTime, barEndTime)

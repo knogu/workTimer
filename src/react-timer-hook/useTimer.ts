@@ -1,34 +1,45 @@
 import {useState, useCallback, useEffect} from 'react';
-import { Time, Validate } from './utils';
+import { Time } from './utils';
 import { useInterval } from './hooks';
 import {useRecoilState} from "recoil";
-import {expiryState, isRunningState, secondsState} from "../state.js";
-import {TimerSettings} from "./index";
+import {didStartState, expiryState, isRunningState, secondsState} from "../state.js";
+import {getSettings} from "../types/session.ts";
+import {amplifyIfProdEnv} from "../Util.ts";
 
 const DEFAULT_DELAY = 1000;
-function getDelayFromExpiryTimestamp(expiryTimestamp: Date) {
-  if (!Validate.expiryTimestamp(expiryTimestamp)) {
-    return null;
-  }
 
-  const seconds = Time.getSecondsFromExpiry(expiryTimestamp);
-  const extraMilliSeconds = Math.floor((seconds - Math.floor(seconds)) * 1000);
-  return extraMilliSeconds > 0 ? extraMilliSeconds : DEFAULT_DELAY;
+interface TimerResult {
+  totalSeconds: number;
+  seconds: number;
+  minutes: number;
+  hours: number;
+  days: number;
+  isRunning: boolean;
+  start: () => void;
+  pause: () => void;
+  resume: () => void;
+  restart: (newExpiryTimestamp: Date, autoStart?: boolean) => void;
 }
 
-export default function useTimer({ onExpire, autoStart = false }: TimerSettings) {
+export default function useTimer(onExpire: () => void) : TimerResult {
   const [seconds, setSeconds] = useRecoilState(secondsState);
   const [expiryTimestamp, setExpiryTimestamp] = useRecoilState(expiryState);
-  useEffect(() => {
-    const expiry = new Date()
-    expiry.setSeconds(expiry.getSeconds() + seconds)
-  }, []);
   const [isRunning, setIsRunning] = useRecoilState(isRunningState);
-  const [didStart, setDidStart] = useState(autoStart);
-  const [delay, setDelay] = useState(getDelayFromExpiryTimestamp(expiryTimestamp));
+  const [didStart, setDidStart] = useRecoilState(didStartState);
+  const [delay, setDelay] = useState<number | null>(1000);
+
+  useEffect(() => {
+    if (!didStart) {
+      getSettings().then((fetchedSettings) => {
+        setSeconds(amplifyIfProdEnv(fetchedSettings.sessionLengthMin))
+      })
+
+      const expiry = new Date()
+      expiry.setSeconds(expiry.getSeconds() + seconds)
+    }
+  }, []);
 
   const handleExpire = useCallback(() => {
-    Validate.onExpire(onExpire) && onExpire();
     setIsRunning(false);
     setDelay(null);
   }, [onExpire]);
@@ -37,8 +48,8 @@ export default function useTimer({ onExpire, autoStart = false }: TimerSettings)
     setIsRunning(false);
   }, []);
 
-  const restart = useCallback((newExpiryTimestamp, newAutoStart = true) => {
-    setDelay(getDelayFromExpiryTimestamp(newExpiryTimestamp));
+  const restart = useCallback((newExpiryTimestamp: Date, newAutoStart = true) => {
+    setDelay(1000);
     setDidStart(newAutoStart);
     setIsRunning(newAutoStart);
     setExpiryTimestamp(newExpiryTimestamp);
