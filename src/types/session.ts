@@ -47,7 +47,7 @@ export async function getTodaySessions(): Promise<Session[]> {
         return await db.table('sessions')
             .where('startTime')
             .aboveOrEqual(startOfDay)
-            .toArray();
+            .toArray().then((ls) => ls.sort((a:Session, b:Session) => a.startTime.getTime() - b.startTime.getTime()));
     } catch (error) {
         return [];
     }

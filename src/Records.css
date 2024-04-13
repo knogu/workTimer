@@ -1,9 +1,14 @@
 .records-bar {
-    width: 30px;
+    width: 28px;
     margin: 70px auto 0;
     position: relative;
     border: 1px solid darkgray;
     height: 720px;
+    border-radius: 13px;
+}
+
+.doneSession-0 {
+    border-radius: 10px 10px 0 0;
 }
 
 .startTime {

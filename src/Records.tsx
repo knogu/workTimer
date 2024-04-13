@@ -17,9 +17,9 @@ export const Records = () => {
     return isProd() ? RecordsText() : RecordsGraphPage()
 }
 
-const getTimeInTwoHours = () => {
+const getBarEndTime = () => {
     const t = new Date();
-    t.setHours(t.getHours() + 2)
+    t.setHours(t.getHours() + 1)
     return t;
 }
 
@@ -50,15 +50,15 @@ export const RecordsBar = () => {
     const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
     const [todayStartTime, setTodayStartTime] = useState<Date>(new Date())
 
-    const [barEndTime, setBarEndTime] = useState<Date>(getTimeInTwoHours);
+    const [barEndTime, setBarEndTime] = useState<Date>(getBarEndTime);
     useEffect(() => {
         getTodaySessions().then((data) => {
             setTodayDoneSessionList(data)
         })
 
         const timer = setInterval(() => {
-            setBarEndTime(getTimeInTwoHours());
-        }, 1000000);
+            setBarEndTime(getBarEndTime());
+        }, 10000);
 
         return () => {
             clearInterval(timer);
@@ -95,8 +95,8 @@ export const RecordsBar = () => {
                 }
 
                 {
-                    todayDoneSessionList.map((session) => (
-                        <div className="doneSession" style={{
+                    todayDoneSessionList.map((session, index) => (
+                        <div className={"doneSession" + " doneSession-" + index} style={{
                             top: getTop(session, pixPerMin, todayStartTime),
                             height: getHeight(session, pixPerMin),
                             right: 0
