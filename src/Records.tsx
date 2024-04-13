@@ -1,6 +1,5 @@
 import "./Records.css"
 
-import Header from "./Header.tsx";
 import {ChangeEvent, useEffect, useState} from "react";
 import {
     addSessionToDb,
@@ -9,13 +8,9 @@ import {
     getTodaySessions,
     Session
 } from "./types/session.ts";
-import {isProd, padZero} from "./Util.ts";
+import {padZero} from "./Util.ts";
 import {useRecoilState} from "recoil";
 import {todayDoneSessionListState} from "./state.ts";
-
-export const Records = () => {
-    return isProd() ? RecordsText() : RecordsGraphPage()
-}
 
 const getBarEndTime = () => {
     const t = new Date();
@@ -134,15 +129,6 @@ export const RecordsBar = () => {
     )
 }
 
-export const RecordsGraphPage = () => {
-    return (
-        <>
-            <Header/>
-            {RecordsBar()}
-        </>
-    )
-}
-
 const AddRecord = (setDoneSessionList: React.Dispatch<React.SetStateAction<Session[]>>) => {
     const initStart = new Date()
     initStart.setMinutes(initStart.getMinutes() - 25)
@@ -212,28 +198,4 @@ const DoneSession = (session: Session) => {
     return (
         <p>{start_h}:{start_m} - {end_h}:{end_m} ({diff_m}m)</p>
     );
-}
-
-const RecordsText = () => {
-    const [doneSessionList, setDoneSessionList] = useState<Session[]>([]);
-    useEffect(() => {
-        getTodaySessions().then((data) => {
-            setDoneSessionList(data)
-        })
-    }, []);
-    return (
-        <>
-            <Header/>
-            <div className="finished-sessions">
-                <h1>finished sessions</h1>
-                {doneSessionList.length > 0 ?
-                    doneSessionList.map((doneSession) => {
-                        return DoneSession(doneSession)
-                    })
-                    :
-                    "no records yet"
-                }
-            </div>
-        </>
-    )
 }
