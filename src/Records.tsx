@@ -32,6 +32,10 @@ const getTop = (session: Session, pixPerMin: number, todayStartTime: Date) => {
     return pixPerMin * getMinDiff(todayStartTime, session.startTime)
 }
 
+const getMiddle = (session: Session, pixPerMin: number, todayStartTime: Date) => {
+    return pixPerMin * getMinDiff(todayStartTime, session.startTime) + getHeight(session, pixPerMin) * 0.5 - 20
+}
+
 const getTopForHourAnnotation = (h: number, pixPerMin: number, todayStartTime: Date) => {
     const hourDate = new Date()
     hourDate.setHours(h)
@@ -81,6 +85,8 @@ export const RecordsBar = () => {
     let hours = Array.from({ length: 24 }, (_, index) => index);
     hours = hours.filter(num => todayStartTime.getHours() < num && num <= barEndTime.getHours());
 
+    const [focusedDoneSession, setFocusedDoneSession] = useState(-1);
+
     return (
         <>
             <div className="records-bar">
@@ -96,13 +102,31 @@ export const RecordsBar = () => {
 
                 {
                     todayDoneSessionList.map((session, index) => (
-                        <div className={"doneSession" + " doneSession-" + index} style={{
-                            top: getTop(session, pixPerMin, todayStartTime),
-                            height: getHeight(session, pixPerMin),
-                            right: 0
-                        }}></div>
+                        <>
+                            <div className={"doneSession" + " doneSession-" + index}
+                                 onMouseEnter={() => {
+                                     setFocusedDoneSession(() => index)
+                                 }}
+                                 onMouseLeave={() => {
+                                     setFocusedDoneSession(() => -1)
+                                 }}
+                                 style={{
+                                     position: "absolute",
+                                     top: getTop(session, pixPerMin, todayStartTime),
+                                     height: getHeight(session, pixPerMin),
+                                     right: 0
+                                 }}></div>
+                            {focusedDoneSession === index ?
+                                <div className="focusedDoneSession" style={{
+                                    position: "absolute",
+                                    top: getMiddle(session, pixPerMin, todayStartTime),
+                                }}>{DoneSession(session)}</div> :
+                                <></>
+                            }
+                        </>
                     ))
                 }
+
             </div>
 
             {AddRecord(setTodayDoneSessionList)}
@@ -183,13 +207,10 @@ const DoneSession = (session: Session) => {
 
     const diff = end.getTime() - start.getTime()
     const diff_s = Math.floor(diff / 1000)
-    const diff_s_remain = diff_s % 60
     const diff_m = Math.floor(diff_s / 60)
 
     return (
-        <div>
-            <p>{start_h}:{start_m} - {end_h}:{end_m} ({diff_m}m{diff_s_remain}s)</p>
-        </div>
+        <p>{start_h}:{start_m} - {end_h}:{end_m} ({diff_m}m)</p>
     );
 }
 

@@ -34,6 +34,10 @@ button {
   appearance: none;       /* ボタンのデフォルトスタイルを無効化 */
 }
 
+p {
+  margin: 0;
+}
+
 .timer-button {
   border-radius: 50%;
   width: 50px;
