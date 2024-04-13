@@ -31,11 +31,12 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   useEffect(() => {
     if (!didStart) {
       getSettings().then((fetchedSettings) => {
-        setSeconds(amplifyIfProdEnv(fetchedSettings.sessionLengthMin))
+        setSeconds(() => amplifyIfProdEnv(fetchedSettings.sessionLengthMin))
       })
 
       const expiry = new Date()
       expiry.setSeconds(expiry.getSeconds() + seconds)
+      setExpiryTimestamp(expiry)
     }
   }, []);
 

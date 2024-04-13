@@ -45,7 +45,7 @@ const Timer = (settings: Settings) => {
             setCurSessionStartTime(null);
 
             const time = new Date();
-            time.setSeconds(time.getSeconds() + amplifyIfProdEnv(length));
+            time.setSeconds(time.getSeconds() + amplifyIfProdEnv(settings.sessionLengthMin));
 
             Push.create("Session finished", {
                 body: "Take a break",

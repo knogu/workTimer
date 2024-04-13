@@ -76,7 +76,7 @@ export async function getTodayTotalMinutes(): Promise<number> {
 
 export const getSessionLengthMin = (session: Session) => {
     const diffInMilliseconds: number = session.endTime.getTime() - session.startTime.getTime();
-    return Math.floor(diffInMilliseconds / (1000 * 60));
+    return diffInMilliseconds / (1000 * 60);
 }
 
 export const getMinDiff = (earlier: Date, later: Date) => {

@@ -9,8 +9,8 @@ import {
     Session
 } from "./types/session.ts";
 import {padZero} from "./Util.ts";
-import {useRecoilState} from "recoil";
-import {todayDoneSessionListState} from "./state.ts";
+import {useRecoilState, useRecoilValue} from "recoil";
+import {currentStartTimeState, expiryState, isRunningState, settingsState, todayDoneSessionListState} from "./state.ts";
 
 const getBarEndTime = () => {
     const t = new Date();
@@ -23,8 +23,8 @@ const getHeight = (session: Session, pixPerMin: number) => {
     return pixPerMin * minDiff
 }
 
-const getTop = (session: Session, pixPerMin: number, todayStartTime: Date) => {
-    return pixPerMin * getMinDiff(todayStartTime, session.startTime)
+const getTop = (sessionStartTime: Date, pixPerMin: number, todayStartTime: Date) => {
+    return pixPerMin * getMinDiff(todayStartTime, sessionStartTime)
 }
 
 const getMiddle = (session: Session, pixPerMin: number, todayStartTime: Date) => {
@@ -52,7 +52,7 @@ export const RecordsBar = () => {
     const [barEndTime, setBarEndTime] = useState<Date>(getBarEndTime);
     useEffect(() => {
         getTodaySessions().then((data) => {
-            setTodayDoneSessionList(data)
+            setTodayDoneSessionList(() => data)
         })
 
         const timer = setInterval(() => {
@@ -81,11 +81,22 @@ export const RecordsBar = () => {
     hours = hours.filter(num => todayStartTime.getHours() < num && num <= barEndTime.getHours());
 
     const [focusedDoneSession, setFocusedDoneSession] = useState(-1);
+    const isRunning = useRecoilValue(isRunningState)
+    const curSessionStartTime = useRecoilValue(currentStartTimeState)
+    const expiryTimestamp = useRecoilValue(expiryState)
+    const curSessionStartTimeOrNow = isRunning ? curSessionStartTime! : new Date()
+    const settings = useRecoilValue(settingsState);
+    const onGoingSessionFutureMin = isRunning ? (expiryTimestamp.getTime() - curSessionStartTime!.getTime()) / (60 * 1000) : settings.sessionLengthMin
 
     return (
         <>
             <div className="records-bar">
-                <div className="startTime">{startTimeDisplay}</div>
+                {
+                    todayStartTime.getMinutes() < 50 ?
+                        <div className="startTime">{startTimeDisplay}</div> :
+                        <></>
+                }
+
                 {
                     hours.map((h) => (
                         <div className="hours-annotation"
@@ -107,7 +118,7 @@ export const RecordsBar = () => {
                                  }}
                                  style={{
                                      position: "absolute",
-                                     top: getTop(session, pixPerMin, todayStartTime),
+                                     top: getTop(session.startTime, pixPerMin, todayStartTime),
                                      height: getHeight(session, pixPerMin),
                                      right: 0
                                  }}></div>
@@ -122,9 +133,30 @@ export const RecordsBar = () => {
                     ))
                 }
 
-            </div>
+                {
+                    <>
+                        <div className={"ongoingSessionFuture"}
+                             style={{
+                                 position: "absolute",
+                                 top: getTop(curSessionStartTimeOrNow, pixPerMin, todayStartTime),
+                                 height: pixPerMin * onGoingSessionFutureMin,
+                                 right: 0
+                             }}></div>
 
-            {AddRecord(setTodayDoneSessionList)}
+                        <div className={"doneSession"}
+                             style={{
+                                 position: "absolute",
+                                 top: getTop(curSessionStartTimeOrNow, pixPerMin, todayStartTime),
+                                 height: pixPerMin * (((new Date()).getTime() - curSessionStartTimeOrNow.getTime()) / (1000 * 60)),
+                                 right: 0
+                             }}></div>
+                    </>
+            }
+
+        </div>
+
+{
+    AddRecord(setTodayDoneSessionList)}
         </>
     )
 }

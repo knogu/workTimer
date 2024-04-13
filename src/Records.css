@@ -34,6 +34,11 @@
     background-color: dodgerblue;
 }
 
+.ongoingSessionFuture {
+    width: 100%;
+    background-color: lightblue;
+}
+
 .focusedDoneSession {
     right: -200px;
     width: 160px;
