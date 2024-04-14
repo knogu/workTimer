@@ -10,7 +10,14 @@ import {
 } from "./types/session.ts";
 import {padZero} from "./Util.ts";
 import {useRecoilState, useRecoilValue} from "recoil";
-import {currentStartTimeState, expiryState, isRunningState, settingsState, todayDoneSessionListState} from "./state.ts";
+import {
+    currentStartTimeState,
+    expiryState,
+    isRunningState,
+    secondsState,
+    settingsState,
+    todayDoneSessionListState
+} from "./state.ts";
 
 const getBarEndTime = () => {
     const t = new Date();
@@ -81,12 +88,12 @@ export const RecordsBar = () => {
     hours = hours.filter(num => todayStartTime.getHours() < num && num <= barEndTime.getHours());
 
     const [focusedDoneSession, setFocusedDoneSession] = useState(-1);
-    const isRunning = useRecoilValue(isRunningState)
     const curSessionStartTime = useRecoilValue(currentStartTimeState)
     const expiryTimestamp = useRecoilValue(expiryState)
-    const curSessionStartTimeOrNow = isRunning ? curSessionStartTime! : new Date()
+    const curSessionStartTimeOrNow = curSessionStartTime === null ? new Date() : curSessionStartTime!
     const settings = useRecoilValue(settingsState);
-    const onGoingSessionFutureMin = isRunning ? (expiryTimestamp.getTime() - curSessionStartTime!.getTime()) / (60 * 1000) : settings.sessionLengthMin
+    // const onGoingSessionFutureMin = curSessionStartTime === null ? settings.sessionLengthMin : (expiryTimestamp.getTime() - curSessionStartTime!.getTime()) / (60 * 1000)
+    const seconds = useRecoilValue(secondsState)
 
     return (
         <>
@@ -140,7 +147,7 @@ export const RecordsBar = () => {
                              style={{
                                  position: "absolute",
                                  top: getTop(curSessionStartTimeOrNow, pixPerMin, todayStartTime),
-                                 height: pixPerMin * onGoingSessionFutureMin,
+                                 height: pixPerMin * (seconds / 60),
                                  right: 0
                              }}></div>
 
@@ -149,7 +156,8 @@ export const RecordsBar = () => {
                                  position: "absolute",
                                  top: getTop(curSessionStartTimeOrNow, pixPerMin, todayStartTime),
                                  height: pixPerMin * (((new Date()).getTime() - curSessionStartTimeOrNow.getTime()) / (1000 * 60)),
-                                 right: 0
+                                 right: 0,
+                                 zIndex: 1,
                              }}></div>
                     </>
             }
