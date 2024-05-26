@@ -8,6 +8,7 @@ import {
 import Settings from "./Config.tsx";
 import {TimerPage} from "./App.tsx";
 import {RecoilRoot} from "recoil";
+import RecordsPage from "./RecordsPage.tsx";
 
 const router = createBrowserRouter([
     {
@@ -17,7 +18,11 @@ const router = createBrowserRouter([
     {
         path: "/settings",
         element: <Settings/>,
-    }
+    },
+  {
+    path: "/records",
+    element: <RecordsPage/>,
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

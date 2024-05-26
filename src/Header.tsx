@@ -11,6 +11,9 @@ export default function Header() {
                 <div>
                     <Link to="/settings">settings</Link>
                 </div>
+                <div>
+                    <Link to="/records">records</Link>
+                </div>
             </div>
         </header>
     )

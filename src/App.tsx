@@ -9,7 +9,7 @@ import {
     Settings
 } from "./types/session.ts"
 import {amplifyIfProdEnv, displayedMinutes, padZero} from "./Util.ts";
-import {RecordsBar} from "./Records.tsx";
+import {RecordsBar} from "./RecordsBar.tsx";
 import Header from "./Header.tsx";
 import {useRecoilState, useRecoilValue} from "recoil";
 import {
