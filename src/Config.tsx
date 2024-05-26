@@ -29,6 +29,12 @@ export default function SettingsPage() {
                            onChange={(event)=> {onSettingsChange({...settings, goalMinutes: parseInt(event.target.value)})}}/>
                     min
                 </div>
+
+                <div className="config-item">
+                    <label htmlFor="userId">userId</label>
+                    <input id="userId" value={settings.userId} type="number"
+                           onChange={(event)=> {onSettingsChange({...settings, userId: parseInt(event.target.value)})}}/>
+                </div>
             </div>
         </>
     )

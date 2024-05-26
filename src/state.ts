@@ -2,7 +2,7 @@ import {atom, selector} from "recoil";
 import {Session, sessionMinutesSum, Settings, PauseDuration} from "./types/session.ts";
 import {amplifyIfProdEnv} from "./Util.ts";
 
-const initSettings: Settings = {sessionLengthMin: 25, goalMinutes: 360, id: 1};
+const initSettings: Settings = {sessionLengthMin: 25, goalMinutes: 360, id: 1, userId: undefined};
 
 export const settingsState = atom({
     key: "settingsState",

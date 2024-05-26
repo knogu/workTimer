@@ -94,6 +94,7 @@ export type Settings = {
     id: number;
     sessionLengthMin: number;
     goalMinutes: number;
+    userId: number | undefined;
 }
 
 export async function putSettings(settings: Settings) {
@@ -103,7 +104,7 @@ export async function putSettings(settings: Settings) {
 export async function getSettings() {
     return db.settings.get(1).then((res) => {
             if (res === undefined) {
-                const newSetting = {sessionLengthMin: 25, goalMinutes: 360, id:1}
+                const newSetting = {sessionLengthMin: 25, goalMinutes: 360, id:1, userId: undefined}
                 putSettings(newSetting)
                 return newSetting
             } else {
