@@ -3,6 +3,12 @@ import Dexie from "dexie";
 export type Session = {
     startTime: Date;
     endTime: Date;
+    pauseDurations: PauseDuration[];
+}
+
+export type PauseDuration = {
+    pauseStart: Date;
+    pauseEnd: Date;
 }
 
 class Database extends Dexie {
@@ -12,7 +18,7 @@ class Database extends Dexie {
     public constructor() {
         super('Database');
         this.version(1).stores({
-            sessions: '++id, startTime, endTime',
+            sessions: '++id, startTime, endTime, stoppingDurations',
             settings: '++id, sessionLengthMin, goalMinutes',
         });
         this.sessions = this.table('sessions')

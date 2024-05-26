@@ -12,10 +12,7 @@ import {padZero} from "./Util.ts";
 import {useRecoilState, useRecoilValue} from "recoil";
 import {
     currentStartTimeState,
-    expiryState,
-    isRunningState,
     secondsState,
-    settingsState,
     todayDoneSessionListState
 } from "./state.ts";
 
@@ -89,9 +86,9 @@ export const RecordsBar = () => {
 
     const [focusedDoneSession, setFocusedDoneSession] = useState(-1);
     const curSessionStartTime = useRecoilValue(currentStartTimeState)
-    const expiryTimestamp = useRecoilValue(expiryState)
+    // const expiryTimestamp = useRecoilValue(expiryState)
     const curSessionStartTimeOrNow = curSessionStartTime === null ? new Date() : curSessionStartTime!
-    const settings = useRecoilValue(settingsState);
+    // const settings = useRecoilValue(settingsState);
     // const onGoingSessionFutureMin = curSessionStartTime === null ? settings.sessionLengthMin : (expiryTimestamp.getTime() - curSessionStartTime!.getTime()) / (60 * 1000)
     const seconds = useRecoilValue(secondsState)
 
@@ -200,6 +197,7 @@ const AddRecord = (setDoneSessionList: React.Dispatch<React.SetStateAction<Sessi
         const doneSession: Session = {
             startTime: newRecordStartTime,
             endTime: newRecordEndTime,
+            pauseDurations: []
         }
 
         addSessionToDb(doneSession);

@@ -1,7 +1,14 @@
 import {useState, useCallback, useEffect} from 'react';
-import {useRecoilState} from "recoil";
-import {didStartState, expiryState, isRunningState, secondsState} from "../state.js";
-import {getSettings} from "../types/session.ts";
+import {useRecoilState, useSetRecoilState} from "recoil";
+import {
+  curPauseTimeState,
+  didStartState,
+  expiryState,
+  isRunningState,
+  curPauseDurationsState,
+  secondsState
+} from "../state.js";
+import {getSettings, PauseDuration} from "../types/session.ts";
 import {amplifyIfProdEnv} from "../Util.ts";
 import useInterval from "./useInterval.ts";
 import Time from "./Time.ts";
@@ -26,6 +33,8 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   const [expiryTimestamp, setExpiryTimestamp] = useRecoilState(expiryState);
   const [isRunning, setIsRunning] = useRecoilState(isRunningState);
   const [didStart, setDidStart] = useRecoilState(didStartState);
+  const [curPauseTime, setCurPauseTime] = useRecoilState(curPauseTimeState);
+  const setCurPauseTimeDurations = useSetRecoilState(curPauseDurationsState);
   const [delay, setDelay] = useState<number | null>(1000);
 
   useEffect(() => {
@@ -48,6 +57,11 @@ export default function useTimer(onExpire: () => void) : TimerResult {
 
   const pause = useCallback(() => {
     setIsRunning(false);
+    if (curPauseTime !== null) {
+      console.error("pauseTime should be null when getting paused")
+    }
+    setCurPauseTime(() => new Date())
+    console.log("paused")
   }, []);
 
   const restart = useCallback((newExpiryTimestamp: Date, newAutoStart = true) => {
@@ -60,6 +74,11 @@ export default function useTimer(onExpire: () => void) : TimerResult {
 
   const resume = useCallback(() => {
     const time = new Date();
+    if (curPauseTime === null) {
+      console.error("pauseTime shouldn't be null when getting resumed")
+    }
+    const p: PauseDuration = {pauseStart: curPauseTime!, pauseEnd: time}
+    setCurPauseTimeDurations((prev) => [...prev, p])
     time.setMilliseconds(time.getMilliseconds() + (seconds * 1000));
     restart(time);
   }, [seconds, restart]);

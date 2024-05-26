@@ -11,8 +11,13 @@ import {
 import {amplifyIfProdEnv, displayedMinutes, padZero} from "./Util.ts";
 import {RecordsBar} from "./Records.tsx";
 import Header from "./Header.tsx";
-import {useRecoilState} from "recoil";
-import {currentStartTimeState, settingsState, todayDoneSessionListState} from "./state.ts";
+import {useRecoilState, useRecoilValue} from "recoil";
+import {
+    curPauseDurationsState,
+    currentStartTimeState,
+    settingsState,
+    todayDoneSessionListState
+} from "./state.ts";
 import useTimer from "./react-timer-hook/useTimer.ts";
 
 
@@ -22,6 +27,7 @@ function timerString(minutes: number, seconds: number) {
 
 const Timer = (settings: Settings) => {
     const [curSessionStartTime, setCurSessionStartTime] = useRecoilState(currentStartTimeState)
+    const curPauseDurations = useRecoilValue(curPauseDurationsState)
     const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
 
     const {
@@ -34,10 +40,10 @@ const Timer = (settings: Settings) => {
         restart,
     } = useTimer(
         () => {
-            // TODO: 停止してる間を考慮
             const doneSession: Session = {
                 startTime: curSessionStartTime!,
                 endTime: new Date(),
+                pauseDurations: curPauseDurations,
             }
 
             addSessionToDb(doneSession);
