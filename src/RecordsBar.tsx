@@ -12,7 +12,6 @@ import {padZero} from "./Util.ts";
 import {useRecoilState, useRecoilValue} from "recoil";
 import {
     currentStartTimeState,
-    secondsState,
     todayDoneSessionListState
 } from "./state.ts";
 
@@ -90,7 +89,6 @@ export const RecordsBar = () => {
     const curSessionStartTimeOrNow = curSessionStartTime === null ? new Date() : curSessionStartTime!
     // const settings = useRecoilValue(settingsState);
     // const onGoingSessionFutureMin = curSessionStartTime === null ? settings.sessionLengthMin : (expiryTimestamp.getTime() - curSessionStartTime!.getTime()) / (60 * 1000)
-    const seconds = useRecoilValue(secondsState)
 
     return (
         <>
@@ -140,14 +138,6 @@ export const RecordsBar = () => {
 
                 {
                     <>
-                        <div className={"ongoingSessionFuture"}
-                             style={{
-                                 position: "absolute",
-                                 top: getTop(curSessionStartTimeOrNow, pixPerMin, todayStartTime),
-                                 height: pixPerMin * (seconds / 60),
-                                 right: 0
-                             }}></div>
-
                         <div className={"doneSession"}
                              style={{
                                  position: "absolute",
