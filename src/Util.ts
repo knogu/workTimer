@@ -13,7 +13,3 @@ export function displayedMinutes(minutes: number) {
 export function isProd() {
     return import.meta.env.MODE === 'production'
 }
-
-export function amplifyIfProdEnv(n: number) {
-    return import.meta.env.MODE === 'production' ? n * 60 : n
-}

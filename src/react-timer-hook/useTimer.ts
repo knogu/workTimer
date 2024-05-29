@@ -9,7 +9,6 @@ import {
   secondsState
 } from "../state.js";
 import {getSettings, PauseDuration} from "../types/session.ts";
-import {amplifyIfProdEnv} from "../Util.ts";
 import useInterval from "./useInterval.ts";
 import Time from "./Time.ts";
 
@@ -40,7 +39,7 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   useEffect(() => {
     if (!didStart) {
       getSettings().then((fetchedSettings) => {
-        setSeconds(() => amplifyIfProdEnv(fetchedSettings.sessionLengthMin))
+        setSeconds(() => fetchedSettings.sessionLengthMin * 60)
       })
 
       const expiry = new Date()

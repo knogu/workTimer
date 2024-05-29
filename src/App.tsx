@@ -8,7 +8,7 @@ import {
     Session, sessionMinutesSum,
     Settings
 } from "./types/session.ts"
-import {amplifyIfProdEnv, displayedMinutes, padZero} from "./Util.ts";
+import {displayedMinutes, padZero} from "./Util.ts";
 import {RecordsBar} from "./RecordsBar.tsx";
 import Header from "./Header.tsx";
 import {useRecoilState, useRecoilValue} from "recoil";
@@ -51,7 +51,7 @@ const Timer = (settings: Settings) => {
             setCurSessionStartTime(null);
 
             const time = new Date();
-            time.setSeconds(time.getSeconds() + amplifyIfProdEnv(settings.sessionLengthMin));
+            time.setSeconds(time.getSeconds() + settings.sessionLengthMin * 60);
 
             Push.create("Session finished", {
                 body: "Take a break",

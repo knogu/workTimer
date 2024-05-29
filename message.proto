@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package timer.gen;
+option java_package = "timer.gen";
+
+service MessageService {
+  rpc Operations (stream Operation) returns (stream Operation) {}
+  rpc getOnline (GetOnlineReq) returns (stream Operation) {}
+}
+
+message GetOnlineReq {
+  string userId = 1;
+}
+
+enum OperationType {
+  SEND_MSG = 0;
+  RECEIPT_MSG = 1;
+}
+
+message Message {
+  int64 fromUserId = 1;
+  int64 toUserId = 2;
+  string content = 3;
+}
+
+message Operation {
+  OperationType opType = 1;
+  Message message = 2;
+}

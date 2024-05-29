@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@bufbuild/protobuf": "^1.9.0",
+    "@connectrpc/connect": "^1.4.0",
+    "@connectrpc/connect-web": "^1.4.0",
     "dexie": "^4.0.1",
     "push.js": "^1.0.12",
     "react": "^18.2.0",
@@ -18,6 +21,9 @@
     "recoil": "^0.7.7"
   },
   "devDependencies": {
+    "@bufbuild/buf": "^1.32.1",
+    "@bufbuild/protoc-gen-es": "^1.9.0",
+    "@connectrpc/protoc-gen-connect-es": "^1.4.0",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/eslint-plugin": "^7.2.0",

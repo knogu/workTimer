@@ -1,6 +1,5 @@
 import {atom, selector} from "recoil";
 import {Session, sessionMinutesSum, Settings, PauseDuration} from "./types/session.ts";
-import {amplifyIfProdEnv} from "./Util.ts";
 
 const initSettings: Settings = {sessionLengthMin: 25, goalMinutes: 360, id: 1, userId: undefined};
 
@@ -11,7 +10,7 @@ export const settingsState = atom({
 
 
 const expiryTimestamp = new Date();
-expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + amplifyIfProdEnv(25));
+expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + 25 * 60);
 
 export const expiryState = atom({
     key: "expiryState",

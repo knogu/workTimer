@@ -12,7 +12,9 @@ import {padZero} from "./Util.ts";
 import {useRecoilState, useRecoilValue} from "recoil";
 import {
     currentStartTimeState,
-    todayDoneSessionListState
+    todayDoneSessionListState,
+    secondsState,
+    settingsState
 } from "./state.ts";
 
 const getBarEndTime = () => {
@@ -26,20 +28,20 @@ const getHeight = (session: Session, pixPerMin: number) => {
     return pixPerMin * minDiff
 }
 
-const getTop = (sessionStartTime: Date, pixPerMin: number, todayStartTime: Date) => {
-    return pixPerMin * getMinDiff(todayStartTime, sessionStartTime)
+const getTop = (sessionStartTime: Date, pixPerMin: number, barStartTime: Date) => {
+    return pixPerMin * getMinDiff(barStartTime, sessionStartTime)
 }
 
-const getMiddle = (session: Session, pixPerMin: number, todayStartTime: Date) => {
-    return pixPerMin * getMinDiff(todayStartTime, session.startTime) + getHeight(session, pixPerMin) * 0.5 - 20
+const getMiddle = (session: Session, pixPerMin: number, barStartTime: Date) => {
+    return pixPerMin * getMinDiff(barStartTime, session.startTime) + getHeight(session, pixPerMin) * 0.5 - 20
 }
 
-const getTopForHourAnnotation = (h: number, pixPerMin: number, todayStartTime: Date) => {
+const getTopForHourAnnotation = (h: number, pixPerMin: number, barStartTime: Date) => {
     const hourDate = new Date()
     hourDate.setHours(h)
     hourDate.setMinutes(0)
     hourDate.setSeconds(0)
-    return pixPerMin * getMinDiff(todayStartTime, hourDate) - 10
+    return pixPerMin * getMinDiff(barStartTime, hourDate) - 10
 }
 
 const date2inputVal = (date: Date) => {
@@ -50,7 +52,7 @@ const date2inputVal = (date: Date) => {
 
 export const RecordsBar = () => {
     const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
-    const [todayStartTime, setTodayStartTime] = useState<Date>(new Date())
+    // const [todayStartTime, setTodayStartTime] = useState<Date>(new Date())
 
     const [barEndTime, setBarEndTime] = useState<Date>(getBarEndTime);
     useEffect(() => {
@@ -67,34 +69,39 @@ export const RecordsBar = () => {
         };
     }, []);
 
-    useEffect(() => {
-        if (todayDoneSessionList.length > 0) {
-            setTodayStartTime(() => todayDoneSessionList[0].startTime)
-        }
-    }, [todayDoneSessionList]);
+    // useEffect(() => {
+    //         setTodayStartTime(() => todayDoneSessionList[0].startTime)
+    //     }
+    // }, [todayDoneSessionList]);
 
+    const curSessionStartTime = useRecoilValue(currentStartTimeState)
+    let barStartTime: Date;
+    if (todayDoneSessionList.length > 0) {
+        barStartTime = todayDoneSessionList[0].startTime;
+    } else if (curSessionStartTime != null) {
+        barStartTime = curSessionStartTime
+    } else {
+        barStartTime = new Date()
+    }
 
-    const minutesLengthInBar = getMinDiff(todayStartTime, barEndTime)
+    const minutesLengthInBar = getMinDiff(barStartTime, barEndTime)
     const barLengthPixel = 720;
     const pixPerMin = barLengthPixel / minutesLengthInBar;
 
-    const startTimeDisplay = todayStartTime.getHours() + ":" + padZero(todayStartTime.getMinutes())
+    const startTimeDisplay = barStartTime.getHours() + ":" + padZero(barStartTime.getMinutes())
 
     let hours = Array.from({ length: 24 }, (_, index) => index);
-    hours = hours.filter(num => todayStartTime.getHours() < num && num <= barEndTime.getHours());
+    hours = hours.filter(num => barStartTime.getHours() < num && num <= barEndTime.getHours());
 
     const [focusedDoneSession, setFocusedDoneSession] = useState(-1);
-    const curSessionStartTime = useRecoilValue(currentStartTimeState)
-    // const expiryTimestamp = useRecoilValue(expiryState)
-    const curSessionStartTimeOrNow = curSessionStartTime === null ? new Date() : curSessionStartTime!
-    // const settings = useRecoilValue(settingsState);
-    // const onGoingSessionFutureMin = curSessionStartTime === null ? settings.sessionLengthMin : (expiryTimestamp.getTime() - curSessionStartTime!.getTime()) / (60 * 1000)
+    const seconds = useRecoilValue(secondsState)
+    const settings = useRecoilValue(settingsState)
 
     return (
         <>
             <div className="records-bar">
                 {
-                    todayStartTime.getMinutes() < 50 ?
+                    barStartTime.getMinutes() < 50 ?
                         <div className="startTime">{startTimeDisplay}</div> :
                         <></>
                 }
@@ -102,7 +109,7 @@ export const RecordsBar = () => {
                 {
                     hours.map((h) => (
                         <div className="hours-annotation"
-                             style={{top: getTopForHourAnnotation(h, pixPerMin, todayStartTime)}}>
+                             style={{top: getTopForHourAnnotation(h, pixPerMin, barStartTime)}}>
                             {h.toString() + ":00"}
                         </div>
                     ))
@@ -120,7 +127,7 @@ export const RecordsBar = () => {
                                  }}
                                  style={{
                                      position: "absolute",
-                                     top: getTop(session.startTime, pixPerMin, todayStartTime),
+                                     top: getTop(session.startTime, pixPerMin, barStartTime),
                                      height: getHeight(session, pixPerMin),
                                      width: index === focusedDoneSession ? 25 : 20,
                                      right: index === focusedDoneSession ? -2.5 : 0,
@@ -128,7 +135,7 @@ export const RecordsBar = () => {
                             {focusedDoneSession === index ?
                                 <div className="focusedDoneSession" style={{
                                     position: "absolute",
-                                    top: getMiddle(session, pixPerMin, todayStartTime),
+                                    top: getMiddle(session, pixPerMin, barStartTime),
                                 }}>{DoneSession(session)}</div> :
                                 <></>
                             }
@@ -138,14 +145,19 @@ export const RecordsBar = () => {
 
                 {
                     <>
-                        <div className={"doneSession"}
-                             style={{
-                                 position: "absolute",
-                                 top: getTop(curSessionStartTimeOrNow, pixPerMin, todayStartTime),
-                                 height: pixPerMin * (((new Date()).getTime() - curSessionStartTimeOrNow.getTime()) / (1000 * 60)),
-                                 right: 0,
-                                 zIndex: 1,
-                             }}></div>
+                        {curSessionStartTime === null ?
+                            <></>
+                            :
+                            <div className={"doneSession"}
+                                 style={{
+                                     position: "absolute",
+                                     top: getTop(curSessionStartTime, pixPerMin, barStartTime),
+                                     height: pixPerMin * (settings.sessionLengthMin - (seconds / 60)),
+                                     right: 0,
+                                     zIndex: 1,
+                                 }}></div>
+                        }
+
                     </>
             }
 
