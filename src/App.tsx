@@ -4,9 +4,8 @@ import {useEffect} from "react";
 import Push from "push.js";
 import {
     addSessionToDb,
-    getSettings, getTodaySessions,
+    getTodaySessions,
     Session, sessionMinutesSum,
-    Settings
 } from "./types/session.ts"
 import {displayedMinutes, padZero} from "./Util.ts";
 import {RecordsBar} from "./RecordsBar.tsx";
@@ -25,10 +24,11 @@ function timerString(minutes: number, seconds: number) {
     return minutes.toString() + ":" + padZero(seconds)
 }
 
-const Timer = (settings: Settings) => {
+const Timer = () => {
     const [curSessionStartTime, setCurSessionStartTime] = useRecoilState(currentStartTimeState)
     const curPauseDurations = useRecoilValue(curPauseDurationsState)
     const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
+    const settings = useRecoilValue(settingsState)
 
     const {
         seconds,
@@ -118,16 +118,10 @@ const Timer = (settings: Settings) => {
 }
 
 export const TimerPage = () => {
-    const [settings, setSettings] = useRecoilState(settingsState);
-    useEffect(() => {
-        getSettings().then((fetchedSettings) => {
-            setSettings(fetchedSettings)
-        })
-    }, []);
     return (
         <>
             <Header/>
-            {Timer(settings)}
+            {Timer()}
         </>
     )
 }

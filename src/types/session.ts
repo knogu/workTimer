@@ -17,9 +17,9 @@ class Database extends Dexie {
 
     public constructor() {
         super('Database');
-        this.version(1).stores({
+        this.version(2).stores({
             sessions: '++id, startTime, endTime, stoppingDurations',
-            settings: '++id, sessionLengthMin, goalMinutes',
+            settings: '++id, sessionLengthMin, shortBreakMinutes, longBreakMinutes, sessionCntBeforeLongBreak, sessionCntBeforeLongBreak',
         });
         this.sessions = this.table('sessions')
         this.settings = this.table('settings')
@@ -93,6 +93,9 @@ export const getMinDiff = (earlier: Date, later: Date) => {
 export type Settings = {
     id: number;
     sessionLengthMin: number;
+    shortBreakMinutes: number;
+    longBreakMinutes: number;
+    sessionCntBeforeLongBreak: number;
     goalMinutes: number;
     userId: number | undefined;
 }
@@ -104,7 +107,7 @@ export async function putSettings(settings: Settings) {
 export async function getSettings() {
     return db.settings.get(1).then((res) => {
             if (res === undefined) {
-                const newSetting = {sessionLengthMin: 25, goalMinutes: 360, id:1, userId: undefined}
+                const newSetting = {sessionLengthMin: 25, shortBreakMinutes: 5, longBreakMinutes: 20, sessionCntBeforeLongBreak: 4, goalMinutes: 360, id:1, userId: undefined}
                 putSettings(newSetting)
                 return newSetting
             } else {

@@ -1,7 +1,7 @@
 import {atom, selector} from "recoil";
-import {Session, sessionMinutesSum, Settings, PauseDuration} from "./types/session.ts";
+import {Session, sessionMinutesSum, Settings, PauseDuration, getSettings} from "./types/session.ts";
 
-const initSettings: Settings = {sessionLengthMin: 25, goalMinutes: 360, id: 1, userId: undefined};
+const initSettings: Settings = await getSettings();
 
 export const settingsState = atom({
     key: "settingsState",
