@@ -7,9 +7,9 @@
     border-radius: 5px;
 }
 
-.doneSession-0 {
-    border-radius: 5px 5px 0 0;
-}
+/*.doneSession-0 {*/
+/*    border-radius: 5px 5px 0 0;*/
+/*}*/
 
 .startTime {
     position: absolute;
@@ -30,6 +30,7 @@
 }
 
 .doneSession {
+    border-radius: 4px 4px 4px 4px;
     width: 100%;
     background-color: dodgerblue;
 }
