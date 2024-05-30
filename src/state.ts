@@ -1,5 +1,12 @@
 import {atom, selector} from "recoil";
-import {Session, sessionMinutesSum, Settings, PauseDuration, getSettings} from "./types/session.ts";
+import {
+    DurationType,
+    getSettings,
+    PauseDuration,
+    Session,
+    sessionMinutesSum,
+    Settings
+} from "./types/session.ts";
 
 const initSettings: Settings = await getSettings();
 
@@ -35,6 +42,11 @@ export const didStartState = atom({
 export const currentStartTimeState = atom<Date | null>({
     key: "currentStartTimeState",
     default: null
+})
+
+export const currentDurationTypeState = atom<DurationType>({
+    key: "durationTypeState",
+    default: DurationType.Focus
 })
 
 export const curPauseTimeState = atom<Date | null>({

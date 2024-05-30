@@ -1,5 +1,11 @@
 import Dexie from "dexie";
 
+export enum DurationType {
+    Focus,
+    ShortBreak,
+    LongBreak
+}
+
 export type Session = {
     startTime: Date;
     endTime: Date;

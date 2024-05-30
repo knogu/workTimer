@@ -57,10 +57,9 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   const pause = useCallback(() => {
     setIsRunning(false);
     if (curPauseTime !== null) {
-      console.error("pauseTime should be null when getting paused")
+      console.warn("pauseTime should be null when getting paused")
     }
     setCurPauseTime(() => new Date())
-    console.log("paused")
   }, []);
 
   const restart = useCallback((newExpiryTimestamp: Date, newAutoStart = true) => {
@@ -80,7 +79,7 @@ export default function useTimer(onExpire: () => void) : TimerResult {
     setCurPauseTimeDurations((prev) => [...prev, p])
     time.setMilliseconds(time.getMilliseconds() + (seconds * 1000));
     restart(time);
-  }, [seconds, restart]);
+  }, [seconds, restart, curPauseTime]);
 
   const start = useCallback(() => {
     if (didStart) {

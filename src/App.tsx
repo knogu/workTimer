@@ -2,20 +2,17 @@ import './App.css';
 
 import {useEffect} from "react";
 import Push from "push.js";
-import {
-    addSessionToDb,
-    getTodaySessions,
-    Session, sessionMinutesSum,
-} from "./types/session.ts"
+import {addSessionToDb, DurationType, getTodaySessions, Session, sessionMinutesSum,} from "./types/session.ts"
 import {displayedMinutes, padZero} from "./Util.ts";
 import {RecordsBar} from "./RecordsBar.tsx";
 import Header from "./Header.tsx";
 import {useRecoilState, useRecoilValue} from "recoil";
 import {
-    curPauseDurationsState,
-    currentStartTimeState,
-    settingsState,
-    todayDoneSessionListState
+  curPauseDurationsState,
+  currentDurationTypeState,
+  currentStartTimeState,
+  settingsState,
+  todayDoneSessionListState
 } from "./state.ts";
 import useTimer from "./react-timer-hook/useTimer.ts";
 
@@ -26,9 +23,11 @@ function timerString(minutes: number, seconds: number) {
 
 const Timer = () => {
     const [curSessionStartTime, setCurSessionStartTime] = useRecoilState(currentStartTimeState)
+    const [curDurationType, setCurDurationType] = useRecoilState(currentDurationTypeState)
     const curPauseDurations = useRecoilValue(curPauseDurationsState)
     const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
     const settings = useRecoilValue(settingsState)
+    let curDurationIdx = 0;
 
     const {
         seconds,
@@ -40,18 +39,34 @@ const Timer = () => {
         restart,
     } = useTimer(
         () => {
-            const doneSession: Session = {
+            if (curDurationType === DurationType.Focus) {
+              const doneSession: Session = {
                 startTime: curSessionStartTime!,
                 endTime: new Date(),
                 pauseDurations: curPauseDurations,
+              }
+
+              addSessionToDb(doneSession);
+              setTodayDoneSessionList((prev) => [...prev, doneSession])
             }
 
-            addSessionToDb(doneSession);
-            setTodayDoneSessionList((prev) => [...prev, doneSession])
             setCurSessionStartTime(null);
 
             const time = new Date();
-            time.setSeconds(time.getSeconds() + settings.sessionLengthMin * 60);
+            let nextMinutes: number;
+            curDurationIdx += 1;
+            curDurationIdx %= 2 * settings.sessionCntBeforeLongBreak
+            if (curDurationIdx == 2 * settings.sessionCntBeforeLongBreak - 1) {
+              nextMinutes = settings.longBreakMinutes
+              setCurDurationType(DurationType.LongBreak)
+            } else if (curDurationIdx % 2 == 0) {
+              nextMinutes = settings.sessionLengthMin
+              setCurDurationType(DurationType.Focus)
+            } else {
+              nextMinutes = settings.shortBreakMinutes
+              setCurDurationType(DurationType.ShortBreak)
+            }
+            time.setSeconds(time.getSeconds() + nextMinutes * 60);
 
             Push.create("Session finished", {
                 body: "Take a break",

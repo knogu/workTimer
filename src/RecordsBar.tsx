@@ -2,7 +2,7 @@ import "./RecordsBar.css"
 
 import {ChangeEvent, useEffect, useState} from "react";
 import {
-    addSessionToDb,
+    addSessionToDb, DurationType,
     getMinDiff,
     getSessionLengthMin,
     getTodaySessions,
@@ -14,7 +14,7 @@ import {
     currentStartTimeState,
     todayDoneSessionListState,
     secondsState,
-    settingsState
+    settingsState, currentDurationTypeState
 } from "./state.ts";
 
 const getBarEndTime = () => {
@@ -96,6 +96,7 @@ export const RecordsBar = () => {
     const [focusedDoneSession, setFocusedDoneSession] = useState(-1);
     const seconds = useRecoilValue(secondsState)
     const settings = useRecoilValue(settingsState)
+    const curDurationType = useRecoilValue(currentDurationTypeState)
 
     return (
         <>
@@ -145,9 +146,7 @@ export const RecordsBar = () => {
 
                 {
                     <>
-                        {curSessionStartTime === null ?
-                            <></>
-                            :
+                        {curSessionStartTime !== null && curDurationType === DurationType.Focus ?
                             <div className={"doneSession"}
                                  style={{
                                      position: "absolute",
@@ -156,6 +155,8 @@ export const RecordsBar = () => {
                                      right: 0,
                                      zIndex: 1,
                                  }}></div>
+                            :
+                            <></>
                         }
 
                     </>
