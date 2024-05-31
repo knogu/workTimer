@@ -2,7 +2,14 @@ import './App.css';
 
 import {useEffect} from "react";
 import Push from "push.js";
-import {addSessionToDb, DurationType, getTodaySessions, Session, sessionMinutesSum,} from "./types/session.ts"
+import {
+  addSessionToDb,
+  DurationType,
+  getPushMsg,
+  getTodaySessions,
+  Session,
+  sessionMinutesSum,
+} from "./types/session.ts"
 import {displayedMinutes, padZero} from "./Util.ts";
 import {RecordsBar} from "./RecordsBar.tsx";
 import Header from "./Header.tsx";
@@ -50,6 +57,14 @@ const Timer = () => {
               setTodayDoneSessionList((prev) => [...prev, doneSession])
             }
 
+            Push.create(getPushMsg(curDurationType), {
+              body: getPushMsg(curDurationType),
+              timeout: 4000,
+              onClick: function () {
+                window.focus();
+              }
+            });
+
             setCurSessionStartTime(null);
 
             const time = new Date();
@@ -67,14 +82,6 @@ const Timer = () => {
               setCurDurationType(DurationType.ShortBreak)
             }
             time.setSeconds(time.getSeconds() + nextMinutes * 60);
-
-            Push.create("Session finished", {
-                body: "Take a break",
-                timeout: 4000,
-                onClick: function () {
-                    window.focus();
-                }
-            });
 
             restart(time, false)
         },

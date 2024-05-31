@@ -122,3 +122,11 @@ export async function getSettings() {
         }
     )
 }
+
+export function getPushMsg(durationType: DurationType) {
+    if (durationType === DurationType.Focus) {
+        return "Take a break"
+    } else {
+        return "Get back to work"
+    }
+}
