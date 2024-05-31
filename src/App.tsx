@@ -120,6 +120,13 @@ const Timer = () => {
                         {timerString(minutes, seconds)}
                     </div>
 
+                    <div>{
+                      curDurationType === DurationType.Focus ?
+                          "Focus"
+                          :
+                          "Break"
+                    }</div>
+
                     <div>
                         {
                             isRunning ?
