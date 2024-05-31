@@ -23,7 +23,7 @@ class Database extends Dexie {
 
     public constructor() {
         super('Database');
-        this.version(2).stores({
+        this.version(3).stores({
             sessions: '++id, startTime, endTime, stoppingDurations',
             settings: '++id, sessionLengthMin, shortBreakMinutes, longBreakMinutes, sessionCntBeforeLongBreak, sessionCntBeforeLongBreak',
         });
