@@ -40,7 +40,7 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   useEffect(() => {
     if (!didStart) {
       fetchSettings('1').then((fetchedSettings) => {
-        setSeconds(() => fetchedSettings.sessionLengthMin * 60)
+        setSeconds(() => fetchedSettings.focusLength * 60)
       })
 
       const expiry = new Date()

@@ -72,15 +72,15 @@ const Timer = () => {
             const time = new Date();
             let nextMinutes: number;
             curDurationIdx += 1;
-            curDurationIdx %= 2 * settings.sessionCntBeforeLongBreak
-            if (curDurationIdx == 2 * settings.sessionCntBeforeLongBreak - 1) {
-              nextMinutes = settings.longBreakMinutes
+            curDurationIdx %= 2 * settings.focusCntBeforeLongBreak
+            if (curDurationIdx == 2 * settings.focusCntBeforeLongBreak - 1) {
+              nextMinutes = settings.longBreakLength
               setCurDurationType(DurationType.LongBreak)
             } else if (curDurationIdx % 2 == 0) {
-              nextMinutes = settings.sessionLengthMin
+              nextMinutes = settings.focusLength
               setCurDurationType(DurationType.Focus)
             } else {
-              nextMinutes = settings.shortBreakMinutes
+              nextMinutes = settings.shortBreakLength
               setCurDurationType(DurationType.ShortBreak)
             }
             time.setSeconds(time.getSeconds() + nextMinutes * 60);

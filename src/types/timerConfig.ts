@@ -7,10 +7,10 @@ export enum DurationType {
 export async function fetchSettings(userId: string): Promise<timerConfig> {
   let settings: timerConfig = {
     userId: parseInt(userId),
-    sessionLengthMin: 25,
-    shortBreakMinutes: 5,
-    longBreakMinutes: 10,
-    sessionCntBeforeLongBreak: 3,
+    focusLength: 25,
+    shortBreakLength: 5,
+    longBreakLength: 10,
+    focusCntBeforeLongBreak: 3,
     goalMinutes: 300,
   }
   try {
@@ -21,10 +21,10 @@ export async function fetchSettings(userId: string): Promise<timerConfig> {
     const data = await response.json();
     settings = {
       userId: parseInt(userId),
-      sessionLengthMin: data.focusLength,
-      shortBreakMinutes: data.shortBreakLength,
-      longBreakMinutes: data.longBreakLength,
-      sessionCntBeforeLongBreak: data.focusCntBeforeLongBreak,
+      focusLength: data.focusLength,
+      shortBreakLength: data.shortBreakLength,
+      longBreakLength: data.longBreakLength,
+      focusCntBeforeLongBreak: data.focusCntBeforeLongBreak,
       goalMinutes: 300,
     }
     return settings
@@ -35,16 +35,48 @@ export async function fetchSettings(userId: string): Promise<timerConfig> {
 }
 
 export type timerConfig = {
-  sessionLengthMin: number;
-  shortBreakMinutes: number;
-  longBreakMinutes: number;
-  sessionCntBeforeLongBreak: number;
+  focusLength: number;
+  shortBreakLength: number;
+  longBreakLength: number;
+  focusCntBeforeLongBreak: number;
   goalMinutes: number;
   userId: number | undefined;
 }
 
-export async function putSettings(settings: timerConfig) {
-  // return db.settings.put({ ...settings, id: 1})
+export type timerConfigReq = {
+  focusLength: number;
+  shortBreakLength: number;
+  longBreakLength: number;
+  focusCntBeforeLongBreak: number;
+}
+
+export async function putSettings(userId: string, config: timerConfig) {
+  const req: timerConfigReq = {
+    focusLength: config.focusLength,
+    shortBreakLength: config.shortBreakLength,
+    longBreakLength: config.longBreakLength,
+    focusCntBeforeLongBreak: config.focusCntBeforeLongBreak,
+  }
+  try {
+    const response = await fetch('http://localhost:8080/config/' + userId, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(req)
+    });
+
+
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log(result);
+  } catch (error) {
+    console.error('Error posting data: ', error);
+  }
 }
 
 export async function getTimerConfig() {

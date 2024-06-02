@@ -154,7 +154,7 @@ export const RecordsBar = () => {
                                  style={{
                                      position: "absolute",
                                      top: getTop(curSessionStartTime, pixPerMin, barStartTime),
-                                     height: pixPerMin * (settings.sessionLengthMin - (seconds / 60)),
+                                     height: pixPerMin * (settings.focusLength - (seconds / 60)),
                                      right: 0,
                                      zIndex: 1,
                                  }}></div>
