@@ -20,7 +20,7 @@ import {
   curPauseDurationsState,
   currentDurationTypeState,
   currentStartTimeState,
-  settingsState,
+  timerConfigState,
   todayDoneSessionListState
 } from "./state.ts";
 import useTimer from "./react-timer-hook/useTimer.ts";
@@ -35,7 +35,7 @@ const Timer = () => {
     const [curDurationType, setCurDurationType] = useRecoilState(currentDurationTypeState)
     const curPauseDurations = useRecoilValue(curPauseDurationsState)
     const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
-    const settings = useRecoilValue(settingsState)
+    const settings = useRecoilValue(timerConfigState)
     let curDurationIdx = 0;
 
     const {
@@ -139,7 +139,7 @@ const Timer = () => {
 
                     </div>
 
-                    <div><p>total {displayedMinutes(sessionMinutesSum(todayDoneSessionList))} / {displayedMinutes(settings.goalMinutes)} ({(sessionMinutesSum(todayDoneSessionList) / settings.goalMinutes * 100).toFixed(0)} %)</p></div>
+                    <div><p>total {displayedMinutes(sessionMinutesSum(todayDoneSessionList))} / {displayedMinutes(settings.goalMinutesPerDay)} ({(sessionMinutesSum(todayDoneSessionList) / settings.goalMinutesPerDay * 100).toFixed(0)} %)</p></div>
                 </div>
             </div>
         </div>

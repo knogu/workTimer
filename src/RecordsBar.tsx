@@ -17,7 +17,7 @@ import {
     currentStartTimeState,
     todayDoneSessionListState,
     secondsState,
-    settingsState, currentDurationTypeState
+    timerConfigState, currentDurationTypeState
 } from "./state.ts";
 
 const getBarEndTime = () => {
@@ -98,7 +98,7 @@ export const RecordsBar = () => {
 
     const [focusedDoneSession, setFocusedDoneSession] = useState(-1);
     const seconds = useRecoilValue(secondsState)
-    const settings = useRecoilValue(settingsState)
+    const settings = useRecoilValue(timerConfigState)
     const curDurationType = useRecoilValue(currentDurationTypeState)
 
     return (

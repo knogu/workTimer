@@ -1,15 +1,15 @@
 import {useState, useCallback, useEffect} from 'react';
-import {useRecoilState, useSetRecoilState} from "recoil";
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 import {
   curPauseTimeState,
   didStartState,
   expiryState,
   isRunningState,
   curPauseDurationsState,
-  secondsState
+  secondsState, userIdState
 } from "../state.js";
 import {PauseDuration} from "../types/session.ts";
-import {fetchSettings} from "../types/timerConfig.ts";
+import {fetchTimerConfig} from "../types/timerConfig.ts";
 import useInterval from "./useInterval.ts";
 import Time from "./Time.ts";
 
@@ -36,12 +36,17 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   const [curPauseTime, setCurPauseTime] = useRecoilState(curPauseTimeState);
   const setCurPauseTimeDurations = useSetRecoilState(curPauseDurationsState);
   const [delay, setDelay] = useState<number | null>(1000);
+  const userId = useRecoilValue(userIdState);
 
   useEffect(() => {
     if (!didStart) {
-      fetchSettings('1').then((fetchedSettings) => {
-        setSeconds(() => fetchedSettings.focusLength * 60)
-      })
+      if (userId !== null) {
+        fetchTimerConfig(userId.toString()).then((fetchedSettings) => {
+          setSeconds(() => fetchedSettings.focusLength * 60)
+        })
+      } else {
+        setSeconds(() => 25 * 60)
+      }
 
       const expiry = new Date()
       expiry.setSeconds(expiry.getSeconds() + seconds)
