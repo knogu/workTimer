@@ -1,14 +1,17 @@
 import {atom, selector} from "recoil";
 import {
-    DurationType,
-    getSettings,
     PauseDuration,
     Session,
     sessionMinutesSum,
-    Settings
 } from "./types/session.ts";
 
-const initSettings: Settings = await getSettings();
+import {
+    DurationType,
+    getTimerConfig,
+    timerConfig
+} from "./types/timerConfig.ts";
+
+const initSettings: timerConfig = await getTimerConfig();
 
 export const settingsState = atom({
     key: "settingsState",

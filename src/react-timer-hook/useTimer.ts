@@ -8,7 +8,8 @@ import {
   curPauseDurationsState,
   secondsState
 } from "../state.js";
-import {getSettings, PauseDuration} from "../types/session.ts";
+import {PauseDuration} from "../types/session.ts";
+import {fetchSettings} from "../types/timerConfig.ts";
 import useInterval from "./useInterval.ts";
 import Time from "./Time.ts";
 
@@ -38,7 +39,7 @@ export default function useTimer(onExpire: () => void) : TimerResult {
 
   useEffect(() => {
     if (!didStart) {
-      getSettings().then((fetchedSettings) => {
+      fetchSettings('1').then((fetchedSettings) => {
         setSeconds(() => fetchedSettings.sessionLengthMin * 60)
       })
 

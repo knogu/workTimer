@@ -3,9 +3,11 @@ import './App.css';
 import {useEffect} from "react";
 import Push from "push.js";
 import {
-  addSessionToDb,
   DurationType,
   getPushMsg,
+} from "./types/timerConfig.ts"
+import {
+  addSessionToDb,
   getTodaySessions,
   Session,
   sessionMinutesSum,

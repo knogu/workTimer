@@ -1,13 +1,13 @@
 import './Config.css'
-import {putSettings, Settings} from "./types/session.ts";
 import {useRecoilState} from "recoil";
 import {settingsState} from "./state.ts";
 import Header from "./Header.tsx";
+import {putSettings, timerConfig} from "./types/timerConfig.ts";
 
 export default function SettingsPage() {
     const [settings, setSettings] = useRecoilState(settingsState);
 
-    const onSettingsChange = (newSettings: Settings) => {
+    const onSettingsChange = (newSettings: timerConfig) => {
         setSettings(newSettings)
         putSettings(newSettings)
     }

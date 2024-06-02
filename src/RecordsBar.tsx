@@ -2,12 +2,15 @@ import "./RecordsBar.css"
 
 import {ChangeEvent, useEffect, useState} from "react";
 import {
-    addSessionToDb, DurationType,
+    addSessionToDb,
     getMinDiff,
     getSessionLengthMin,
     getTodaySessions,
     Session
 } from "./types/session.ts";
+import {
+    DurationType,
+} from "./types/timerConfig.ts";
 import {padZero} from "./Util.ts";
 import {useRecoilState, useRecoilValue} from "recoil";
 import {
