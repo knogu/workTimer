@@ -13,7 +13,7 @@ export async function fetchTimerConfig(userId: string): Promise<timerConfig> {
     goalMinutesPerDay: 300,
   }
   try {
-    const response = await fetch('http://localhost:8080/config/' + userId);
+    const response = await fetch('http://34.123.90.197/config/' + userId);
     if (response.status === 404) {
       // putSettings(userId, settings);
       return settings;
@@ -46,7 +46,7 @@ export type timerConfig = {
 
 export async function putSettings(userId: string, config: timerConfig) {
   try {
-    const response = await fetch('http://localhost:8080/config/' + userId, {
+    const response = await fetch('http://34.123.90.197/config/' + userId, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
