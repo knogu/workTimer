@@ -90,7 +90,7 @@ const Timer = () => {
         }
 
         const time = new Date();
-        time.setSeconds(time.getSeconds() + nextMinutes * 3);
+        time.setSeconds(time.getSeconds() + nextMinutes * 60);
         restart(time, false)
 
         setDurationIdx(() => nextDurationIdx)

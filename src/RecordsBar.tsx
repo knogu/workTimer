@@ -55,7 +55,6 @@ const date2inputVal = (date: Date) => {
 
 export const RecordsBar = () => {
     const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
-    // const [todayStartTime, setTodayStartTime] = useState<Date>(new Date())
 
     const [barEndTime, setBarEndTime] = useState<Date>(getBarEndTime);
     useEffect(() => {
@@ -71,11 +70,6 @@ export const RecordsBar = () => {
             clearInterval(timer);
         };
     }, []);
-
-    // useEffect(() => {
-    //         setTodayStartTime(() => todayDoneSessionList[0].startTime)
-    //     }
-    // }, [todayDoneSessionList]);
 
     const curSessionStartTime = useRecoilValue(currentStartTimeState)
     let barStartTime: Date;

@@ -63,7 +63,7 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   const pause = useCallback(() => {
     setIsRunning(false);
     if (curPauseTime !== null) {
-      console.warn("pauseTime should be null when getting paused")
+      console.error("pauseTime should be null when getting paused")
     }
     setCurPauseTime(() => new Date())
   }, []);
@@ -78,9 +78,7 @@ export default function useTimer(onExpire: () => void) : TimerResult {
 
   const resume = useCallback(() => {
     const time = new Date();
-    if (curPauseTime === null) {
-      console.error("pauseTime shouldn't be null when getting resumed")
-    }
+    // TODO: put this log only when resuming, not starting
     const p: PauseDuration = {pauseStart: curPauseTime!, pauseEnd: time}
     setCurPauseTimeDurations((prev) => [...prev, p])
     time.setMilliseconds(time.getMilliseconds() + (seconds * 1000));
