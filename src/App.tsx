@@ -30,10 +30,10 @@ function timerString(minutes: number, seconds: number) {
   return minutes.toString() + ":" + padZero(seconds)
 }
 
-type durationState = {
-  durationIdx: number;
-  pauseEnd: Date;
-}
+// type durationState = {
+//   durationIdx: number;
+//   pauseEnd: Date;
+// }
 
 const Timer = () => {
   const [curSessionStartTime, setCurSessionStartTime] = useRecoilState(currentStartTimeState)
@@ -77,7 +77,7 @@ const Timer = () => {
 
         let nextMinutes: number;
 
-        const nextDurationIdx = (curDurationIdx + 1) % settings.focusCntBeforeLongBreak
+        const nextDurationIdx = (curDurationIdx + 1) % (2 * settings.focusCntBeforeLongBreak)
         if (nextDurationIdx == 2 * settings.focusCntBeforeLongBreak - 1) {
           nextMinutes = settings.longBreakLength
           setCurDurationType(DurationType.LongBreak)
