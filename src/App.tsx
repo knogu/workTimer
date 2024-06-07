@@ -1,6 +1,6 @@
 import './App.css';
 
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import Push from "push.js";
 import {
   DurationType,
@@ -30,13 +30,18 @@ function timerString(minutes: number, seconds: number) {
     return minutes.toString() + ":" + padZero(seconds)
 }
 
+type durationState = {
+  durationIdx: number;
+  pauseEnd: Date;
+}
+
 const Timer = () => {
     const [curSessionStartTime, setCurSessionStartTime] = useRecoilState(currentStartTimeState)
     const [curDurationType, setCurDurationType] = useRecoilState(currentDurationTypeState)
     const curPauseDurations = useRecoilValue(curPauseDurationsState)
     const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
+    const [curDurationIdx, setDurationIdx] = useState(0);
     const settings = useRecoilValue(timerConfigState)
-    let curDurationIdx = 0;
 
     const {
         seconds,
@@ -69,23 +74,27 @@ const Timer = () => {
 
             setCurSessionStartTime(null);
 
-            const time = new Date();
-            let nextMinutes: number;
-            curDurationIdx += 1;
-            curDurationIdx %= 2 * settings.focusCntBeforeLongBreak
-            if (curDurationIdx == 2 * settings.focusCntBeforeLongBreak - 1) {
-              nextMinutes = settings.longBreakLength
-              setCurDurationType(DurationType.LongBreak)
-            } else if (curDurationIdx % 2 == 0) {
-              nextMinutes = settings.focusLength
-              setCurDurationType(DurationType.Focus)
-            } else {
-              nextMinutes = settings.shortBreakLength
-              setCurDurationType(DurationType.ShortBreak)
-            }
-            time.setSeconds(time.getSeconds() + nextMinutes * 60);
 
-            restart(time, false)
+            let nextMinutes: number;
+
+          const nextDurationIdx = (curDurationIdx + 1) % settings.focusCntBeforeLongBreak
+          if (nextDurationIdx == 2 * settings.focusCntBeforeLongBreak - 1) {
+            nextMinutes = settings.longBreakLength
+            setCurDurationType(DurationType.LongBreak)
+          } else if (nextDurationIdx % 2 == 0) {
+            nextMinutes = settings.focusLength
+            setCurDurationType(DurationType.Focus)
+          } else {
+            nextMinutes = settings.shortBreakLength
+            setCurDurationType(DurationType.ShortBreak)
+          }
+
+          const time = new Date();
+          time.setSeconds(time.getSeconds() + nextMinutes * 3);
+          restart(time, false)
+
+            setDurationIdx(() => nextDurationIdx)
+
         },
     );
 
