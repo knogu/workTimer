@@ -12,14 +12,12 @@ export default function RecordsPage() {
 
   return (
       <>
-      <Header/>
+        <Header />
         <div className="dateChoiceBlock">
           {getDateString()}
         </div>
 
-      <div className="graph-container">
-        {RecordsBar()}
-      </div>
+        <RecordsBar />
       </>
   )
 }

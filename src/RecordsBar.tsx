@@ -2,240 +2,239 @@ import "./RecordsBar.css"
 
 import {ChangeEvent, useEffect, useState} from "react";
 import {
-    addSessionToDb,
-    getMinDiff,
-    getSessionLengthMin,
-    getTodaySessions,
-    Session
+  addSessionToDb,
+  getMinDiff,
+  getSessionLengthMin,
+  getTodaySessions,
+  Session
 } from "./types/session.ts";
 import {
-    DurationType,
+  DurationType,
 } from "./types/timerConfig.ts";
 import {padZero} from "./Util.ts";
 import {useRecoilState, useRecoilValue} from "recoil";
 import {
-    currentStartTimeState,
-    todayDoneSessionListState,
-    secondsState,
-    timerConfigState, currentDurationTypeState
+  currentStartTimeState,
+  todayDoneSessionListState,
+  secondsState,
+  timerConfigState, currentDurationTypeState
 } from "./state.ts";
 import {curDate} from "./Util.ts";
 
 const getBarEndTime = () => {
-    const t = curDate();
-    t.setHours(t.getHours() + 1)
-    return t;
+  const t = curDate();
+  t.setHours(t.getHours() + 1)
+  return t;
 }
 
 const getHeight = (session: Session, pixPerMin: number) => {
-    const minDiff = getSessionLengthMin(session)
-    return pixPerMin * minDiff
+  const minDiff = getSessionLengthMin(session)
+  return pixPerMin * minDiff
 }
 
 const getTop = (sessionStartTime: Date, pixPerMin: number, barStartTime: Date) => {
-    return pixPerMin * getMinDiff(barStartTime, sessionStartTime)
+  return pixPerMin * getMinDiff(barStartTime, sessionStartTime)
 }
 
 const getMiddle = (session: Session, pixPerMin: number, barStartTime: Date) => {
-    return pixPerMin * getMinDiff(barStartTime, session.startTime) + getHeight(session, pixPerMin) * 0.5 - 20
+  return pixPerMin * getMinDiff(barStartTime, session.startTime) + getHeight(session, pixPerMin) * 0.5 - 20
 }
 
 const getTopForHourAnnotation = (h: number, pixPerMin: number, barStartTime: Date) => {
-    const hourDate = curDate()
-    hourDate.setHours(h)
-    hourDate.setMinutes(0)
-    hourDate.setSeconds(0)
-    return pixPerMin * getMinDiff(barStartTime, hourDate) - 10
+  const hourDate = curDate()
+  hourDate.setHours(h)
+  hourDate.setMinutes(0)
+  hourDate.setSeconds(0)
+  return pixPerMin * getMinDiff(barStartTime, hourDate) - 10
 }
 
 const date2inputVal = (date: Date) => {
-    const hours: string = date.getHours().toString().padStart(2, '0');
-    const minutes: string = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
+  const hours: string = date.getHours().toString().padStart(2, '0');
+  const minutes: string = date.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
 }
 
 export const RecordsBar = () => {
-    const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
+  const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
 
-    const [barEndTime, setBarEndTime] = useState<Date>(getBarEndTime);
-    useEffect(() => {
-        getTodaySessions().then((data) => {
-            setTodayDoneSessionList(() => data)
-        })
+  const [barEndTime, setBarEndTime] = useState<Date>(getBarEndTime);
+  useEffect(() => {
+    getTodaySessions().then((data) => {
+      setTodayDoneSessionList(() => data)
+    })
 
-        const timer = setInterval(() => {
-            setBarEndTime(getBarEndTime());
-        }, 10000);
+    const timer = setInterval(() => {
+      setBarEndTime(getBarEndTime());
+    }, 10000);
 
-        return () => {
-            clearInterval(timer);
-        };
-    }, []);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
-    const curSessionStartTime = useRecoilValue(currentStartTimeState)
-    let barStartTime: Date;
-    if (todayDoneSessionList.length > 0) {
-        barStartTime = todayDoneSessionList[0].startTime;
-    } else if (curSessionStartTime != null) {
-        barStartTime = curSessionStartTime
-    } else {
-        barStartTime = curDate()
-    }
+  const curSessionStartTime = useRecoilValue(currentStartTimeState)
+  let barStartTime: Date;
+  if (todayDoneSessionList.length > 0) {
+    barStartTime = todayDoneSessionList[0].startTime;
+  } else if (curSessionStartTime != null) {
+    barStartTime = curSessionStartTime
+  } else {
+    barStartTime = curDate()
+  }
 
-    const minutesLengthInBar = getMinDiff(barStartTime, barEndTime)
-    const barLengthPixel = 720;
-    const pixPerMin = barLengthPixel / minutesLengthInBar;
+  const minutesLengthInBar = getMinDiff(barStartTime, barEndTime)
+  const barLengthPixel = 720;
+  const pixPerMin = barLengthPixel / minutesLengthInBar;
 
-    const startTimeDisplay = barStartTime.getHours() + ":" + padZero(barStartTime.getMinutes())
+  const startTimeDisplay = barStartTime.getHours() + ":" + padZero(barStartTime.getMinutes())
 
-    let hours = Array.from({ length: 24 }, (_, index) => index);
-    hours = hours.filter(num => barStartTime.getHours() < num && num <= barEndTime.getHours());
+  let hours = Array.from({length: 24}, (_, index) => index);
+  hours = hours.filter(num => barStartTime.getHours() < num && num <= barEndTime.getHours());
 
-    const [focusedDoneSession, setFocusedDoneSession] = useState(-1);
-    const seconds = useRecoilValue(secondsState)
-    const settings = useRecoilValue(timerConfigState)
-    const curDurationType = useRecoilValue(currentDurationTypeState)
+  const [focusedDoneSession, setFocusedDoneSession] = useState(-1);
+  const seconds = useRecoilValue(secondsState)
+  const settings = useRecoilValue(timerConfigState)
+  const curDurationType = useRecoilValue(currentDurationTypeState)
 
-    return (
-        <>
-            <div className="records-bar">
-                {
-                    barStartTime.getMinutes() < 50 ?
-                        <div className="startTime">{startTimeDisplay}</div> :
-                        <></>
-                }
+  return (
+      <div className="graph-container">
+        <div className="records-bar">
+          {
+            barStartTime.getMinutes() < 50 ?
+                <div className="startTime">{startTimeDisplay}</div> :
+                <></>
+          }
 
-                {
-                    hours.map((h) => (
-                        <div className="hours-annotation"
-                             style={{top: getTopForHourAnnotation(h, pixPerMin, barStartTime)}}>
-                            {h.toString() + ":00"}
-                        </div>
-                    ))
-                }
+          {
+            hours.map((h) => (
+                <div className="hours-annotation"
+                     style={{top: getTopForHourAnnotation(h, pixPerMin, barStartTime)}}>
+                  {h.toString() + ":00"}
+                </div>
+            ))
+          }
 
-                {
-                    todayDoneSessionList.map((session, index) => (
-                        <>
-                            <div className={"doneSession" + " doneSession-" + index}
-                                 onMouseEnter={() => {
-                                     setFocusedDoneSession(() => index)
-                                 }}
-                                 onMouseLeave={() => {
-                                     setFocusedDoneSession(() => -1)
-                                 }}
-                                 style={{
-                                     position: "absolute",
-                                     top: getTop(session.startTime, pixPerMin, barStartTime),
-                                     height: getHeight(session, pixPerMin),
-                                     width: index === focusedDoneSession ? 25 : 20,
-                                     right: index === focusedDoneSession ? -2.5 : 0,
-                                 }}></div>
-                            {focusedDoneSession === index ?
-                                <div className="focusedDoneSession" style={{
-                                    position: "absolute",
-                                    top: getMiddle(session, pixPerMin, barStartTime),
-                                }}>{DoneSession(session)}</div> :
-                                <></>
-                            }
-                        </>
-                    ))
-                }
+          {
+            todayDoneSessionList.map((session, index) => (
+                <>
+                  <div className={"doneSession" + " doneSession-" + index}
+                       onMouseEnter={() => {
+                         setFocusedDoneSession(() => index)
+                       }}
+                       onMouseLeave={() => {
+                         setFocusedDoneSession(() => -1)
+                       }}
+                       style={{
+                         position: "absolute",
+                         top: getTop(session.startTime, pixPerMin, barStartTime),
+                         height: getHeight(session, pixPerMin),
+                         width: index === focusedDoneSession ? 25 : 20,
+                         right: index === focusedDoneSession ? -2.5 : 0,
+                       }}></div>
+                  {focusedDoneSession === index ?
+                      <div className="focusedDoneSession" style={{
+                        position: "absolute",
+                        top: getMiddle(session, pixPerMin, barStartTime),
+                      }}>{DoneSession(session)}</div> :
+                      <></>
+                  }
+                </>
+            ))
+          }
 
-                {
-                    <>
-                        {curSessionStartTime !== null && curDurationType === DurationType.Focus ?
-                            <div className={"doneSession"}
-                                 style={{
-                                     position: "absolute",
-                                     top: getTop(curSessionStartTime, pixPerMin, barStartTime),
-                                     height: pixPerMin * (settings.focusLength - (seconds / 60)),
-                                     right: 0,
-                                     zIndex: 1,
-                                 }}></div>
-                            :
-                            <></>
-                        }
+          {
+            <>
+              {curSessionStartTime !== null && curDurationType === DurationType.Focus ?
+                  <div className={"doneSession"}
+                       style={{
+                         position: "absolute",
+                         top: getTop(curSessionStartTime, pixPerMin, barStartTime),
+                         height: pixPerMin * (settings.focusLength - (seconds / 60)),
+                         right: 0,
+                         zIndex: 1,
+                       }}></div>
+                  :
+                  <></>
+              }
 
-                    </>
-            }
+            </>
+          }
 
         </div>
 
-{
-    AddRecord(setTodayDoneSessionList)}
-        </>
-    )
+        {AddRecord(setTodayDoneSessionList)}
+      </div>
+  )
 }
 
 const AddRecord = (setDoneSessionList: React.Dispatch<React.SetStateAction<Session[]>>) => {
-    const initStart = curDate()
-    initStart.setMinutes(initStart.getMinutes() - 25)
-    const [newRecordStartTime, setNewRecordStartTime] = useState<Date>(initStart)
-    const [newRecordEndTime, setNewRecordEndTime] = useState<Date>(curDate())
+  const initStart = curDate()
+  initStart.setMinutes(initStart.getMinutes() - 25)
+  const [newRecordStartTime, setNewRecordStartTime] = useState<Date>(initStart)
+  const [newRecordEndTime, setNewRecordEndTime] = useState<Date>(curDate())
 
-    const handleNewRecordStartTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const [h, m] = event.target.value.split(':').map(Number);
-        setNewRecordStartTime((prev) => {
-            const newStart = new Date(prev.getTime())
-            newStart.setHours(h)
-            newStart.setMinutes(m)
-            return newStart
-        })
+  const handleNewRecordStartTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const [h, m] = event.target.value.split(':').map(Number);
+    setNewRecordStartTime((prev) => {
+      const newStart = new Date(prev.getTime())
+      newStart.setHours(h)
+      newStart.setMinutes(m)
+      return newStart
+    })
+  }
+
+  const handleNewRecordEndTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const [h, m] = event.target.value.split(':').map(Number);
+    setNewRecordEndTime((prev) => {
+      const newStart = new Date(prev.getTime())
+      newStart.setHours(h)
+      newStart.setMinutes(m)
+      return newStart
+    })
+  }
+
+  const handleAdd = () => {
+    const doneSession: Session = {
+      startTime: newRecordStartTime,
+      endTime: newRecordEndTime,
+      pauseDurations: []
     }
 
-    const handleNewRecordEndTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const [h, m] = event.target.value.split(':').map(Number);
-        setNewRecordEndTime((prev) => {
-            const newStart = new Date(prev.getTime())
-            newStart.setHours(h)
-            newStart.setMinutes(m)
-            return newStart
-        })
-    }
-
-    const handleAdd = () => {
-        const doneSession: Session = {
-            startTime: newRecordStartTime,
-            endTime: newRecordEndTime,
-            pauseDurations: []
-        }
-
-        addSessionToDb(doneSession);
-        setDoneSessionList((prev) =>
-            [...prev, doneSession].sort((a, b)=>a.startTime.getTime() - b.startTime.getTime())
-        )
-    }
-
-    return (
-        <div className="add-record">
-            <label htmlFor="start-time">start time</label>
-            <input type="time" id="start-time" value={date2inputVal(newRecordStartTime)}
-                   onChange={handleNewRecordStartTimeChange}/>
-
-            <label htmlFor="end-time">end time</label>
-            <input type="time" id="end-time" value={date2inputVal(newRecordEndTime)}
-                   onChange={handleNewRecordEndTimeChange}/>
-
-            <button onClick={handleAdd}><i className="fa fa-plus"></i></button>
-        </div>
+    addSessionToDb(doneSession);
+    setDoneSessionList((prev) =>
+        [...prev, doneSession].sort((a, b) => a.startTime.getTime() - b.startTime.getTime())
     )
+  }
+
+  return (
+      <div className="add-record">
+        <label htmlFor="start-time">start time</label>
+        <input type="time" id="start-time" value={date2inputVal(newRecordStartTime)}
+               onChange={handleNewRecordStartTimeChange} />
+
+        <label htmlFor="end-time">end time</label>
+        <input type="time" id="end-time" value={date2inputVal(newRecordEndTime)}
+               onChange={handleNewRecordEndTimeChange} />
+
+        <button onClick={handleAdd}><i className="fa fa-plus"></i></button>
+      </div>
+  )
 }
 
 const DoneSession = (session: Session) => {
-    const start = session.startTime
-    const start_h = start.getHours()
-    const start_m = padZero(start.getMinutes())
+  const start = session.startTime
+  const start_h = start.getHours()
+  const start_m = padZero(start.getMinutes())
 
-    const end = session.endTime
-    const end_h = end.getHours()
-    const end_m = padZero(end.getMinutes())
+  const end = session.endTime
+  const end_h = end.getHours()
+  const end_m = padZero(end.getMinutes())
 
-    const diff = end.getTime() - start.getTime()
-    const diff_s = Math.floor(diff / 1000)
-    const diff_m = Math.floor(diff_s / 60)
+  const diff = end.getTime() - start.getTime()
+  const diff_s = Math.floor(diff / 1000)
+  const diff_m = Math.floor(diff_s / 60)
 
-    return (
-        <p>{start_h}:{start_m} - {end_h}:{end_m} ({diff_m}m)</p>
-    );
+  return (
+      <p>{start_h}:{start_m} - {end_h}:{end_m} ({diff_m}m)</p>
+  );
 }
