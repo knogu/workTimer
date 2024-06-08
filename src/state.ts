@@ -68,6 +68,11 @@ export const curPauseDurationsState = atom<PauseDuration[]>({
     default: []
 })
 
+export const curAchievedMissionsState = atom<string[]>({
+    key: "curAchievedMissions",
+    default: []
+})
+
 export const todayDoneSessionListState = atom<Session[]>({
     key: "todayDoneSessionListState",
     default: []

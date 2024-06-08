@@ -197,7 +197,8 @@ const AddRecord = (setDoneSessionList: React.Dispatch<React.SetStateAction<Sessi
     const doneSession: Session = {
       startTime: newRecordStartTime,
       endTime: newRecordEndTime,
-      pauseDurations: []
+      pauseDurations: [],
+      achievedMissions: [],
     }
 
     addSessionToDb(doneSession);

@@ -15,6 +15,7 @@ import {
 import {displayedMinutes, padZero} from "./Util.ts";
 import {useRecoilState, useRecoilValue} from "recoil";
 import {
+  curAchievedMissionsState,
   curPauseDurationsState,
   currentDurationTypeState,
   currentStartTimeState,
@@ -33,6 +34,7 @@ export const Timer = () => {
   const [curSessionStartTime, setCurSessionStartTime] = useRecoilState(currentStartTimeState)
   const [curDurationType, setCurDurationType] = useRecoilState(currentDurationTypeState)
   const curPauseDurations = useRecoilValue(curPauseDurationsState)
+  const [curAchievedMissions, setAchievedMissions] = useRecoilState(curAchievedMissionsState)
   const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
   const [curDurationIdx, setDurationIdx] = useState(0);
   const settings = useRecoilValue(timerConfigState)
@@ -52,7 +54,9 @@ export const Timer = () => {
             startTime: curSessionStartTime!,
             endTime: curDate(),
             pauseDurations: curPauseDurations,
+            achievedMissions: [...curAchievedMissions],
           }
+          setAchievedMissions([])
 
           addSessionToDb(doneSession);
           setTodayDoneSessionList((prev) => [...prev, doneSession])

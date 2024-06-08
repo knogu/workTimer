@@ -1,7 +1,16 @@
 import {useState} from "react";
+import {useRecoilState} from "recoil";
+import {curAchievedMissionsState} from "./state.ts";
 
 export const Goals = () => {
   const [curGoal, setGoal] = useState("");
+  const [curAchivedGoals, setAchievedGoals] = useRecoilState(curAchievedMissionsState);
+
+  const onGoalAchieved = () => {
+    setAchievedGoals([...curAchivedGoals, curGoal]);
+    setGoal("");
+  }
+
   return (
       <>
         {
@@ -9,7 +18,7 @@ export const Goals = () => {
                 <label htmlFor="goal">mission in this or next session</label>
                 <input id="goal" value={curGoal}
                        onChange={(event) => {setGoal(event.target.value)}}/>
-                <button className="timer-button" onClick={()=>{setGoal("")}}><i className="fa fa-solid fa-check"></i></button>
+                <button className="timer-button" onClick={onGoalAchieved}><i className="fa fa-solid fa-check"></i></button>
               </div>
         }
       </>
