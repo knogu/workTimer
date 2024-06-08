@@ -1,4 +1,5 @@
 import Dexie from "dexie";
+import {curDate} from "../Util.ts";
 
 export type Session = {
     startTime: Date;
@@ -44,7 +45,7 @@ export async function getAllSessions(): Promise<Session[]> {
 
 export async function getTodaySessions(): Promise<Session[]> {
     try {
-        const startOfDay = new Date();
+        const startOfDay = curDate();
         startOfDay.setHours(0, 0, 0, 0);
 
         return await db.table('sessions')

@@ -12,6 +12,7 @@ import {PauseDuration} from "../types/session.ts";
 import {fetchTimerConfig} from "../types/timerConfig.ts";
 import useInterval from "./useInterval.ts";
 import Time from "./Time.ts";
+import {curDate} from "../Util.ts";
 
 const DEFAULT_DELAY = 1000;
 
@@ -48,7 +49,7 @@ export default function useTimer(onExpire: () => void) : TimerResult {
         setSeconds(() => 25 * 60)
       }
 
-      const expiry = new Date()
+      const expiry = curDate()
       expiry.setSeconds(expiry.getSeconds() + seconds)
       setExpiryTimestamp(expiry)
     }
@@ -65,7 +66,7 @@ export default function useTimer(onExpire: () => void) : TimerResult {
     if (curPauseTime !== null) {
       console.error("pauseTime should be null when getting paused")
     }
-    setCurPauseTime(() => new Date())
+    setCurPauseTime(() => curDate())
   }, []);
 
   const restart = useCallback((newExpiryTimestamp: Date, newAutoStart = true) => {
@@ -77,7 +78,7 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   }, []);
 
   const resume = useCallback(() => {
-    const time = new Date();
+    const time = curDate();
     // TODO: put this log only when resuming, not starting
     const p: PauseDuration = {pauseStart: curPauseTime!, pauseEnd: time}
     setCurPauseTimeDurations((prev) => [...prev, p])

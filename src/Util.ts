@@ -13,3 +13,14 @@ export function displayedMinutes(minutes: number) {
 export function isProd() {
     return import.meta.env.MODE === 'production'
 }
+
+export function curDate() {
+    if (isProd()) {
+        return new Date();
+    } else {
+        const curPosix = new Date().getTime()
+        const milliSecsPerDay = 24 * 60 * 60 * 1000;
+        const posixTime = (curPosix * 60) % milliSecsPerDay;
+        return new Date(posixTime);
+    }
+}

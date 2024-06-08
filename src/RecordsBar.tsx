@@ -19,9 +19,10 @@ import {
     secondsState,
     timerConfigState, currentDurationTypeState
 } from "./state.ts";
+import {curDate} from "./Util.ts";
 
 const getBarEndTime = () => {
-    const t = new Date();
+    const t = curDate();
     t.setHours(t.getHours() + 1)
     return t;
 }
@@ -40,7 +41,7 @@ const getMiddle = (session: Session, pixPerMin: number, barStartTime: Date) => {
 }
 
 const getTopForHourAnnotation = (h: number, pixPerMin: number, barStartTime: Date) => {
-    const hourDate = new Date()
+    const hourDate = curDate()
     hourDate.setHours(h)
     hourDate.setMinutes(0)
     hourDate.setSeconds(0)
@@ -78,7 +79,7 @@ export const RecordsBar = () => {
     } else if (curSessionStartTime != null) {
         barStartTime = curSessionStartTime
     } else {
-        barStartTime = new Date()
+        barStartTime = curDate()
     }
 
     const minutesLengthInBar = getMinDiff(barStartTime, barEndTime)
@@ -168,10 +169,10 @@ export const RecordsBar = () => {
 }
 
 const AddRecord = (setDoneSessionList: React.Dispatch<React.SetStateAction<Session[]>>) => {
-    const initStart = new Date()
+    const initStart = curDate()
     initStart.setMinutes(initStart.getMinutes() - 25)
     const [newRecordStartTime, setNewRecordStartTime] = useState<Date>(initStart)
-    const [newRecordEndTime, setNewRecordEndTime] = useState<Date>(new Date())
+    const [newRecordEndTime, setNewRecordEndTime] = useState<Date>(curDate())
 
     const handleNewRecordStartTimeChange = (event: ChangeEvent<HTMLInputElement>) => {
         const [h, m] = event.target.value.split(':').map(Number);

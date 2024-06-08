@@ -1,3 +1,5 @@
+import {curDate} from "../Util.ts";
+
 export default class Time {
   static getTimeFromSeconds(secs: number) {
     const totalSeconds = Math.ceil(secs);
@@ -16,7 +18,7 @@ export default class Time {
   }
 
   static getSecondsFromExpiry(expiry: Date, shouldRound = false) {
-    const now = new Date().getTime();
+    const now = curDate().getTime();
     const milliSecondsDistance = expiry.getTime() - now;
     if (milliSecondsDistance > 0) {
       const val = milliSecondsDistance / 1000;

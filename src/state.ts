@@ -9,6 +9,7 @@ import {
     DurationType,
     timerConfig
 } from "./types/timerConfig.ts";
+import {curDate} from "./Util.ts";
 
 const initTimerConfig: timerConfig = {
     focusCntBeforeLongBreak: 4, focusLength: 25, goalMinutesPerDay: 120, longBreakLength: 20, shortBreakLength: 5
@@ -19,7 +20,7 @@ export const timerConfigState = atom({
     default: initTimerConfig
 })
 
-const expiryTimestamp = new Date();
+const expiryTimestamp = curDate();
 expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + 25 * 60);
 
 export const expiryState = atom({

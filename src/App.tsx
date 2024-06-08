@@ -24,6 +24,7 @@ import {
   todayDoneSessionListState
 } from "./state.ts";
 import useTimer from "./react-timer-hook/useTimer.ts";
+import {curDate} from "./Util.ts";
 
 
 function timerString(minutes: number, seconds: number) {
@@ -56,7 +57,7 @@ const Timer = () => {
         if (curDurationType === DurationType.Focus) {
           const doneSession: Session = {
             startTime: curSessionStartTime!,
-            endTime: new Date(),
+            endTime: curDate(),
             pauseDurations: curPauseDurations,
           }
 
@@ -89,7 +90,7 @@ const Timer = () => {
           setCurDurationType(DurationType.ShortBreak)
         }
 
-        const time = new Date();
+        const time = curDate();
         time.setSeconds(time.getSeconds() + nextMinutes * 60);
         restart(time, false)
 
@@ -99,7 +100,7 @@ const Timer = () => {
   );
 
   function onStart() {
-    setCurSessionStartTime(new Date());
+    setCurSessionStartTime(curDate());
     start();
   }
 
