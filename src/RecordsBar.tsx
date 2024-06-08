@@ -236,6 +236,15 @@ const DoneSession = (session: Session) => {
   const diff_m = Math.floor(diff_s / 60)
 
   return (
-      <p>{start_h}:{start_m} - {end_h}:{end_m} ({diff_m}m)</p>
+      <>
+        <p>{start_h}:{start_m} - {end_h}:{end_m} ({diff_m}m)</p>
+        {
+          session.achievedMissions.length > 0 ?
+          session.achievedMissions.map((item, index) => (
+              <li key={index}>{item}</li>
+          ))
+              :<></>
+        }
+      </>
   );
 }
