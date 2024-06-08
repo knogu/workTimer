@@ -135,8 +135,7 @@ export const Timer = () => {
                 isRunning ?
                     <button className="timer-button" onClick={pause}><i className="fa fa-pause"></i></button>
                     :
-                    <button className="timer-button" onClick={startOrResume()}><i className="fa fa-play"></i>
-                    </button>
+                    <button className="timer-button" onClick={startOrResume()}><i className="fa fa-play"></i></button>
               }
 
             </div>
