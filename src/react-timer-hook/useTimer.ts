@@ -1,18 +1,19 @@
-import {useState, useCallback, useEffect} from 'react';
-import {useRecoilState, useSetRecoilState} from "recoil";
+import {useCallback, useEffect, useState} from 'react';
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 import {
+  curPauseDurationsState,
   curPauseTimeState,
+  currentDurationTypeState,
   didStartState,
   expiryState,
   isRunningState,
-  curPauseDurationsState,
   secondsState
 } from "../state.js";
 import {PauseDuration} from "../types/session.ts";
 import useInterval from "./useInterval.ts";
 import Time from "./Time.ts";
 import {curDate} from "../Util.ts";
-import {TimerConfig} from "../types/timerConfig.ts";
+import {DurationType, TimerConfig} from "../types/timerConfig.ts";
 
 const DEFAULT_DELAY = 1000;
 
@@ -36,12 +37,19 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   const [didStart, setDidStart] = useRecoilState(didStartState);
   const [curPauseTime, setCurPauseTime] = useRecoilState(curPauseTimeState);
   const setCurPauseTimeDurations = useSetRecoilState(curPauseDurationsState);
+  const curDurationType = useRecoilValue(currentDurationTypeState);
   const [delay, setDelay] = useState<number | null>(1000);
 
   useEffect(() => {
     if (!didStart) {
       TimerConfig.load().then((fetchedSettings) => {
-        setSeconds(() => fetchedSettings.focusLength * 60)
+        if (curDurationType === DurationType.Focus) {
+          setSeconds(() => fetchedSettings.focusLength * 60)
+        } else if (curDurationType === DurationType.ShortBreak) {
+          setSeconds(() => fetchedSettings.shortBreakLength * 60)
+        } else {
+          setSeconds(() => fetchedSettings.longBreakLength * 60)
+        }
       })
 
       const expiry = curDate()

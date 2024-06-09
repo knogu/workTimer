@@ -55,9 +55,6 @@ export class TimerConfig {
       const entry = await configDB.settings.get(key);
       if (entry) {
         config[key] = entry.value;
-        console.log(key, entry.value)
-      } else {
-        console.log(key, "not found")
       }
     }
     return config;
