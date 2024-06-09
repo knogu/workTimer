@@ -1,6 +1,6 @@
 .records-bar {
     width: 20px;
-    margin: 70px auto 0;
+    margin: 0px auto 0;
     position: relative;
     border: 1px solid darkgray;
     height: 720px;
@@ -70,4 +70,13 @@
 
 .add-record button {
 
+}
+
+.graph-container {
+    margin-top: 50px;
+}
+
+.total-minutes {
+    text-align: center;
+    margin-bottom: 30px;
 }

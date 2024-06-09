@@ -98,7 +98,7 @@ export const RecordsBar = () => {
 
   return (
       <div className="graph-container">
-        <div>
+        <div className="total-minutes">
           <p>total {displayedMinutes(sessionMinutesSum(todayDoneSessionList))} / {displayedMinutes(settings.goalMinutesPerDay)} ({(sessionMinutesSum(todayDoneSessionList) / settings.goalMinutesPerDay * 100).toFixed(0)} %)</p>
         </div>
         <div className="records-bar">
