@@ -1,27 +1,15 @@
 import './Config.css'
 import {useRecoilState} from "recoil";
-import {timerConfigState, userIdState} from "./state.ts";
+import {timerConfigState} from "./state.ts";
 import Header from "./Header.tsx";
-import {fetchTimerConfig, putSettings, timerConfig} from "./types/timerConfig.ts";
+import {save, TimerConfig} from "./types/timerConfig.ts";
 
 export default function SettingsPage() {
     const [timerConfig, setTimerConfig] = useRecoilState(timerConfigState);
-    const [userId, setUserId] = useRecoilState(userIdState);
 
-    const onSettingsChange = (newSettings: timerConfig) => {
+    const onSettingsChange = (newSettings: TimerConfig) => {
         setTimerConfig(newSettings)
-        if (userId != null) {
-            putSettings(userId.toString(), newSettings)
-        }
-    }
-
-    const onUserIdChange = (newVal: string) => {
-        if (newVal !== "") {
-            setUserId(parseInt(newVal))
-            fetchTimerConfig(newVal.toString()).then(timerConfig => {
-                setTimerConfig(timerConfig);
-            });
-        }
+        save(newSettings)
     }
 
     return (
@@ -60,12 +48,6 @@ export default function SettingsPage() {
                     <input id="goal" value={timerConfig.goalMinutesPerDay} type="number"
                            onChange={(event)=> {onSettingsChange({...timerConfig, goalMinutesPerDay: parseInt(event.target.value)})}}/>
                     min
-                </div>
-
-                <div className="config-item">
-                    <label htmlFor="userId">userId</label>
-                    <input id="userId" value={userId === null ? "" : userId.toString()} type="number"
-                           onChange={(event)=> {onUserIdChange(event.target.value)}}/>
                 </div>
             </div>
         </>

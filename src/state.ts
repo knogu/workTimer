@@ -7,13 +7,11 @@ import {
 
 import {
     DurationType,
-    timerConfig
+    TimerConfig
 } from "./types/timerConfig.ts";
 import {curDate} from "./Util.ts";
 
-const initTimerConfig: timerConfig = {
-    focusCntBeforeLongBreak: 4, focusLength: 25, goalMinutesPerDay: 120, longBreakLength: 20, shortBreakLength: 5
-};
+const initTimerConfig: TimerConfig = await TimerConfig.load();
 
 export const timerConfigState = atom({
     key: "timerConfigState",
@@ -31,11 +29,6 @@ export const expiryState = atom({
 export const secondsState = atom({
     key: "secondsState",
     default: 25 * 60
-})
-
-export const userIdState = atom<number|null>({
-    key: "userIdState",
-    default: null
 })
 
 export const isRunningState = atom({
