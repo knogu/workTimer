@@ -17,7 +17,7 @@ import {
   currentStartTimeState,
   todayDoneSessionListState,
   secondsState,
-  timerConfigState, currentDurationTypeState
+  timerConfigState, currentDurationTypeState, curAchievedMissionsState
 } from "./state.ts";
 import {curDate} from "./Util.ts";
 
@@ -38,6 +38,12 @@ const getTop = (sessionStartTime: Date, pixPerMin: number, barStartTime: Date) =
 
 const getMiddle = (session: Session, pixPerMin: number, barStartTime: Date) => {
   return pixPerMin * getMinDiff(barStartTime, session.startTime) + getHeight(session, pixPerMin) * 0.5 - 20
+}
+
+const getMiddleForCurSession = (startedTime: Date, pixPerMin: number, barStartTime: Date) => {
+  const curLengthMilliS = curDate().getTime() - startedTime.getTime();
+  const curLengthMinutes = curLengthMilliS / 1000 / 60;
+  return pixPerMin * getMinDiff(barStartTime, startedTime) + curLengthMinutes * pixPerMin * 0.5 - 20
 }
 
 const getTopForHourAnnotation = (h: number, pixPerMin: number, barStartTime: Date) => {
@@ -92,9 +98,11 @@ export const RecordsBar = () => {
   hours = hours.filter(num => barStartTime.getHours() < num && num <= barEndTime.getHours());
 
   const [focusedDoneSession, setFocusedDoneSession] = useState(-1);
+  const [isCurrentSessionHovered, setIsCurrentSessionHovered] = useState(false);
   const seconds = useRecoilValue(secondsState)
   const settings = useRecoilValue(timerConfigState)
   const curDurationType = useRecoilValue(currentDurationTypeState)
+  const curAchievedMissions = useRecoilValue(curAchievedMissionsState)
 
   return (
       <div className="graph-container">
@@ -138,7 +146,7 @@ export const RecordsBar = () => {
                       <div className="focusedDoneSession" style={{
                         position: "absolute",
                         top: getMiddle(session, pixPerMin, barStartTime),
-                      }}>{DoneSession(session)}</div> :
+                      }}>{DoneSessionSummary(session)}</div> :
                       <></>
                   }
                 </>
@@ -148,14 +156,28 @@ export const RecordsBar = () => {
           {
             <>
               {curSessionStartTime !== null && curDurationType === DurationType.Focus ?
+                  <>
                   <div className={"doneSession"}
+                       onMouseEnter={() => {
+                         setIsCurrentSessionHovered(true)
+                       }}
+                       onMouseLeave={() => {
+                         setIsCurrentSessionHovered(false)
+                       }}
                        style={{
                          position: "absolute",
                          top: getTop(curSessionStartTime, pixPerMin, barStartTime),
                          height: pixPerMin * (settings.focusLength - (seconds / 60)),
-                         right: 0,
+                         width: isCurrentSessionHovered ? 25 : 20,
+                         right: isCurrentSessionHovered ? -2.5 : 0,
                          zIndex: 1,
                        }}></div>
+                      <div className="focusedDoneSession" style={{
+                        position: "absolute",
+                        top: getMiddleForCurSession(curSessionStartTime, pixPerMin, barStartTime),
+                        display: isCurrentSessionHovered ? "block" : "none",
+                      }}>{OngoingSessionSummary(curSessionStartTime, curAchievedMissions)}</div>
+                  </>
                   :
                   <></>
               }
@@ -225,7 +247,25 @@ const AddRecord = (setDoneSessionList: React.Dispatch<React.SetStateAction<Sessi
   )
 }
 
-const DoneSession = (session: Session) => {
+const OngoingSessionSummary = (curSessionStartTime: Date, achievedGoals: string[]) => {
+  const start_h = curSessionStartTime.getHours()
+  const start_m = padZero(curSessionStartTime.getMinutes())
+
+  return (
+      <>
+        <p>ongoing from {start_h}:{start_m}</p>
+        {
+          achievedGoals.length > 0 ?
+              achievedGoals.map((item, index) => (
+                  <li key={index}>{item}</li>
+              ))
+              :<></>
+        }
+      </>
+  )
+}
+
+const DoneSessionSummary = (session: Session) => {
   const start = session.startTime
   const start_h = start.getHours()
   const start_m = padZero(start.getMinutes())
