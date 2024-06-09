@@ -144,9 +144,7 @@ export const Timer = () => {
 
             </div>
 
-            <div>
-              <p>total {displayedMinutes(sessionMinutesSum(todayDoneSessionList))} / {displayedMinutes(settings.goalMinutesPerDay)} ({(sessionMinutesSum(todayDoneSessionList) / settings.goalMinutesPerDay * 100).toFixed(0)} %)</p>
-            </div>
+
           </div>
         </div>
   );

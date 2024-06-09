@@ -6,12 +6,12 @@ import {
   getMinDiff,
   getSessionLengthMin,
   getTodaySessions,
-  Session
+  Session, sessionMinutesSum
 } from "./types/session.ts";
 import {
   DurationType,
 } from "./types/timerConfig.ts";
-import {padZero} from "./Util.ts";
+import {displayedMinutes, padZero} from "./Util.ts";
 import {useRecoilState, useRecoilValue} from "recoil";
 import {
   currentStartTimeState,
@@ -98,6 +98,9 @@ export const RecordsBar = () => {
 
   return (
       <div className="graph-container">
+        <div>
+          <p>total {displayedMinutes(sessionMinutesSum(todayDoneSessionList))} / {displayedMinutes(settings.goalMinutesPerDay)} ({(sessionMinutesSum(todayDoneSessionList) / settings.goalMinutesPerDay * 100).toFixed(0)} %)</p>
+        </div>
         <div className="records-bar">
           {
             barStartTime.getMinutes() < 50 ?
