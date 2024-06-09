@@ -1,4 +1,5 @@
 import './App.css';
+import './Timer.css';
 
 import {useEffect, useState} from "react";
 import Push from "push.js";
@@ -38,6 +39,44 @@ export const Timer = () => {
   const [curDurationIdx, setDurationIdx] = useState(0);
   const settings = useRecoilValue(timerConfigState)
 
+  const proceedDuration = () => {
+    if (curDurationType === DurationType.Focus) {
+      const doneSession: Session = {
+        startTime: curSessionStartTime!,
+        endTime: curDate(),
+        pauseDurations: curPauseDurations,
+        achievedMissions: [...curAchievedMissions],
+      }
+      setAchievedMissions([])
+
+      addSessionToDb(doneSession);
+      setTodayDoneSessionList((prev) => [...prev, doneSession])
+    }
+
+    setCurSessionStartTime(null);
+
+
+    let nextMinutes: number;
+
+    const nextDurationIdx = (curDurationIdx + 1) % (2 * settings.focusCntBeforeLongBreak)
+    if (nextDurationIdx == 2 * settings.focusCntBeforeLongBreak - 1) {
+      nextMinutes = settings.longBreakLength
+      setCurDurationType(DurationType.LongBreak)
+    } else if (nextDurationIdx % 2 == 0) {
+      nextMinutes = settings.focusLength
+      setCurDurationType(DurationType.Focus)
+    } else {
+      nextMinutes = settings.shortBreakLength
+      setCurDurationType(DurationType.ShortBreak)
+    }
+
+    const time = curDate();
+    time.setSeconds(time.getSeconds() + nextMinutes * 60);
+    restart(time, false)
+
+    setDurationIdx(() => nextDurationIdx)
+  }
+
   const {
     seconds,
     minutes,
@@ -48,18 +87,7 @@ export const Timer = () => {
     restart,
   } = useTimer(
       () => {
-        if (curDurationType === DurationType.Focus) {
-          const doneSession: Session = {
-            startTime: curSessionStartTime!,
-            endTime: curDate(),
-            pauseDurations: curPauseDurations,
-            achievedMissions: [...curAchievedMissions],
-          }
-          setAchievedMissions([])
-
-          addSessionToDb(doneSession);
-          setTodayDoneSessionList((prev) => [...prev, doneSession])
-        }
+        proceedDuration()
 
         Push.create(getPushMsg(curDurationType), {
           body: getPushMsg(curDurationType),
@@ -68,30 +96,6 @@ export const Timer = () => {
             window.focus();
           }
         });
-
-        setCurSessionStartTime(null);
-
-
-        let nextMinutes: number;
-
-        const nextDurationIdx = (curDurationIdx + 1) % (2 * settings.focusCntBeforeLongBreak)
-        if (nextDurationIdx == 2 * settings.focusCntBeforeLongBreak - 1) {
-          nextMinutes = settings.longBreakLength
-          setCurDurationType(DurationType.LongBreak)
-        } else if (nextDurationIdx % 2 == 0) {
-          nextMinutes = settings.focusLength
-          setCurDurationType(DurationType.Focus)
-        } else {
-          nextMinutes = settings.shortBreakLength
-          setCurDurationType(DurationType.ShortBreak)
-        }
-
-        const time = curDate();
-        time.setSeconds(time.getSeconds() + nextMinutes * 60);
-        restart(time, false)
-
-        setDurationIdx(() => nextDurationIdx)
-
       },
   );
 
@@ -140,7 +144,10 @@ export const Timer = () => {
                     :
                     <button className="timer-button" onClick={startOrResume()}><i className="fa fa-play"></i></button>
               }
+            </div>
 
+            <div>
+              <button className="skip-button" onClick={proceedDuration}>finish now</button>
             </div>
           </div>
         </div>
