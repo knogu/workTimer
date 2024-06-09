@@ -20,7 +20,11 @@ export const Goals = () => {
                 <label htmlFor="goal">mission</label>
                 <input id="goal" value={curGoal}
                        onChange={(event) => {setGoal(event.target.value)}}/>
-                <button className="timer-button" onClick={onGoalAchieved}><i className="fa fa-solid fa-check"></i></button>
+                <div>
+                  <button className="completed-button" onClick={onGoalAchieved}> completed
+                    {/*<i className="fa fa-solid fa-check"></i>*/}
+                  </button>
+                </div>
               </div>
         }
       </>
