@@ -1,3 +1,5 @@
+import "./Goals.css"
+
 import {useState} from "react";
 import {useRecoilState} from "recoil";
 import {curAchievedMissionsState} from "./state.ts";
@@ -14,7 +16,7 @@ export const Goals = () => {
   return (
       <>
         {
-              <div className="">
+              <div className="goal-section">
                 <label htmlFor="goal">mission</label>
                 <input id="goal" value={curGoal}
                        onChange={(event) => {setGoal(event.target.value)}}/>
