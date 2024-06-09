@@ -3,16 +3,9 @@ import './Timer.css';
 
 import {useEffect, useState} from "react";
 import Push from "push.js";
-import {
-  DurationType,
-  getPushMsg,
-} from "./types/timerConfig.ts"
-import {
-  addSessionToDb,
-  getTodaySessions,
-  Session,
-} from "./types/session.ts"
-import {padZero} from "./Util.ts";
+import {DurationType, getPushMsg,} from "./types/timerConfig.ts"
+import {addSessionToDb, getTodaySessions, Session,} from "./types/session.ts"
+import {curDate, padZero} from "./Util.ts";
 import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 import {
   curAchievedMissionsState,
@@ -23,7 +16,6 @@ import {
   todayDoneSessionListState
 } from "./state.ts";
 import useTimer from "./react-timer-hook/useTimer.ts";
-import {curDate} from "./Util.ts";
 
 
 function timerString(minutes: number, seconds: number) {
@@ -123,6 +115,29 @@ export const Timer = () => {
     getTodaySessions().then((sessions) => setTodayDoneSessionList(sessions))
   }, []);
 
+  const postFix = (n: number) => {
+    if (n === 1) {
+      return "1st";
+    } else if (n === 2) {
+      return "2nd";
+    } else if (n === 3) {
+      return "3rd";
+    } else {
+      return n.toString() + "th";
+    }
+  }
+
+  const statusString = () => {
+    switch (curDurationType) {
+      case DurationType.Focus:
+        return "Focus (" + (curDurationIdx / 2 + 1).toString() + " / " + settings.focusCntBeforeLongBreak + ")";
+      case DurationType.ShortBreak:
+        return postFix((curDurationIdx - 1) / 2 + 1) + " Short Break";
+      case DurationType.LongBreak:
+        return "Long Break";
+    }
+  }
+
   return (
         <div>
           <div className="timer-container">
@@ -130,13 +145,7 @@ export const Timer = () => {
               {timerString(minutes, seconds)}
             </div>
 
-            <div>{
-              curDurationType === DurationType.Focus ?
-                  "Focus (" + (curDurationIdx / 2 + 1).toString() + " / " + settings.focusCntBeforeLongBreak + ")"
-                  :
-                  "Break"
-
-            }</div>
+            <div>{statusString()}</div>
 
             <div>
               {
