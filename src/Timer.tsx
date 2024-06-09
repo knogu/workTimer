@@ -10,10 +10,9 @@ import {
   addSessionToDb,
   getTodaySessions,
   Session,
-  sessionMinutesSum,
 } from "./types/session.ts"
-import {displayedMinutes, padZero} from "./Util.ts";
-import {useRecoilState, useRecoilValue} from "recoil";
+import {padZero} from "./Util.ts";
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 import {
   curAchievedMissionsState,
   curPauseDurationsState,
@@ -35,7 +34,7 @@ export const Timer = () => {
   const [curDurationType, setCurDurationType] = useRecoilState(currentDurationTypeState)
   const curPauseDurations = useRecoilValue(curPauseDurationsState)
   const [curAchievedMissions, setAchievedMissions] = useRecoilState(curAchievedMissionsState)
-  const [todayDoneSessionList, setTodayDoneSessionList] = useRecoilState(todayDoneSessionListState)
+  const setTodayDoneSessionList = useSetRecoilState(todayDoneSessionListState)
   const [curDurationIdx, setDurationIdx] = useState(0);
   const settings = useRecoilValue(timerConfigState)
 
