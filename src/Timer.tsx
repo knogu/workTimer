@@ -132,9 +132,10 @@ export const Timer = () => {
 
             <div>{
               curDurationType === DurationType.Focus ?
-                  "Focus"
+                  "Focus (" + (curDurationIdx / 2 + 1).toString() + " / " + settings.focusCntBeforeLongBreak + ")"
                   :
                   "Break"
+
             }</div>
 
             <div>
