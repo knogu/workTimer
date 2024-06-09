@@ -14,10 +14,8 @@ export const Goals = () => {
   }
 
   return (
-      <>
-        <h1>Small Goal</h1>
-        {
               <div className="goal-section">
+                <h1>Small Goal</h1>
                 <input id="goal" value={curGoal}
                        onChange={(event) => {setGoal(event.target.value)}}
                        placeholder={"what you want to finish in the current or next focus"}
@@ -28,7 +26,5 @@ export const Goals = () => {
                   </button>
                 </div>
               </div>
-        }
-      </>
   )
 }
