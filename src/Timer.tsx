@@ -143,8 +143,6 @@ export const Timer = () => {
               }
 
             </div>
-
-
           </div>
         </div>
   );
