@@ -1,7 +1,12 @@
 .skip-button {
-  border: black 1px solid;
-  padding: 4px;
+  padding: 4px 6px;
   margin: 5px;
   border-radius: 3px;
   font-size: 15px;
+  color: white;
+  background-color: gray;
+}
+
+.skip-button:hover {
+  background-color: lightgray;
 }

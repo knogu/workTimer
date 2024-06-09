@@ -40,7 +40,7 @@ export const Timer = () => {
   const settings = useRecoilValue(timerConfigState)
 
   const proceedDuration = () => {
-    if (curDurationType === DurationType.Focus) {
+    if (curDurationType === DurationType.Focus && curSessionStartTime !== null) { // curSessionStartTime is null when skipping the current focus duration without starting
       const doneSession: Session = {
         startTime: curSessionStartTime!,
         endTime: curDate(),
@@ -147,7 +147,9 @@ export const Timer = () => {
             </div>
 
             <div>
-              <button className="skip-button" onClick={proceedDuration}>finish now</button>
+              <button className="skip-button" onClick={proceedDuration}>
+                {isRunning ? "finish now" : "skip"}
+              </button>
             </div>
           </div>
         </div>
