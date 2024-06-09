@@ -15,11 +15,13 @@ export const Goals = () => {
 
   return (
       <>
+        <h1>Small Goal</h1>
         {
               <div className="goal-section">
-                <label htmlFor="goal">mission</label>
                 <input id="goal" value={curGoal}
-                       onChange={(event) => {setGoal(event.target.value)}}/>
+                       onChange={(event) => {setGoal(event.target.value)}}
+                       placeholder={"what you want to finish in the current or next focus"}
+                />
                 <div>
                   <button className="completed-button" onClick={onGoalAchieved}> completed
                     {/*<i className="fa fa-solid fa-check"></i>*/}
