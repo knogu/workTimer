@@ -9,10 +9,15 @@ export const TimerPage = () => {
       <>
         <Header />
         <div className="contents">
+          <div className="left-contents">
             <RecordsBar/>
+          </div>
+
+          <div className="right-contents">
             <Timer/>
             <Goals/>
             <AchievedGoals/>
+          </div>
         </div>
       </>
   )
