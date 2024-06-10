@@ -3,6 +3,7 @@ import "./RecordsPage.css"
 import {RecordsBar} from "./RecordsBar.tsx";
 import Header from "./Header.tsx";
 import {curDate} from "./Util.ts";
+import AchievedGoals from "./Achievements.tsx";
 
 export default function RecordsPage() {
   const getDateString = () => {
@@ -17,13 +18,10 @@ export default function RecordsPage() {
           {getDateString()}
         </div>
 
-        <RecordsBar />
+        <div className="records-page-container">
+          <RecordsBar />
+          <AchievedGoals/>
+        </div>
       </>
   )
 }
-
-// function Achievements() {
-//   return (
-//
-//   )
-// }

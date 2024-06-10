@@ -35,4 +35,8 @@ export async function deleteGoal(id: number): Promise<void> {
   await goalDB.goals.delete(id);
 }
 
+export async function getAllGoals(): Promise<Goal[]> {
+  return goalDB.goals.toArray();
+}
+
 export const goalDB = new GoalDatabase();
