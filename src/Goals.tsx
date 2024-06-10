@@ -1,13 +1,14 @@
 import "./Goals.css"
 
 import {useState} from "react";
-import {useRecoilState} from "recoil";
-import {curAchievedGoalIdsState} from "./state.ts";
+import {useRecoilState, useSetRecoilState} from "recoil";
+import {curAchievedGoalIdsState, todayAchievedGoalsState} from "./state.ts";
 import {addGoal, Goal} from "./types/goal.ts";
 
 export const Goals = () => {
   const [curGoal, setGoal] = useState<string>("");
   const [curAchievedGoalIds, setAchievedGoalIds] = useRecoilState(curAchievedGoalIdsState);
+  const setTodayAchievedGoals = useSetRecoilState(todayAchievedGoalsState);
 
   const onGoalAchieved = () => {
     const achievedGoal: Goal = {
@@ -16,6 +17,7 @@ export const Goals = () => {
     addGoal(achievedGoal).then(id =>
         setAchievedGoalIds([...curAchievedGoalIds, id])
     )
+    setTodayAchievedGoals(cur => [...cur, achievedGoal])
     setGoal("");
   }
 

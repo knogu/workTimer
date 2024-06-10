@@ -10,6 +10,7 @@ import {
     TimerConfig
 } from "./types/timerConfig.ts";
 import {curDate} from "./Util.ts";
+import {Goal} from "./types/goal.ts";
 
 const initTimerConfig: TimerConfig = await TimerConfig.load();
 
@@ -68,6 +69,11 @@ export const curAchievedGoalIdsState = atom<number[]>({
 
 export const todayDoneSessionListState = atom<Session[]>({
     key: "todayDoneSessionListState",
+    default: []
+})
+
+export const todayAchievedGoalsState = atom<Goal[]>({
+    key: "setTodayAchievedGoals",
     default: []
 })
 

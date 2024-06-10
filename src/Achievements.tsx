@@ -1,10 +1,12 @@
 import "./Achievements.css"
 
-import {useEffect, useState} from "react";
-import {getAllGoals, Goal} from "./types/goal.ts";
+import {useEffect} from "react";
+import {getAllGoals} from "./types/goal.ts";
+import {useRecoilState} from "recoil";
+import {todayAchievedGoalsState} from "./state.ts";
 
 export default function AchievedGoals() {
-  const [goals, setGoals] = useState<Goal[]>([])
+  const [goals, setGoals] = useRecoilState(todayAchievedGoalsState)
 
   useEffect(() => {
     getAllGoals().then(goals => setGoals(goals))
