@@ -16,15 +16,20 @@
   background-color: #0065ff;
 }
 
-#goal {
-  height: 30px;
-  width: 300px;
-  border-top: none;
-  border-right: none;
-  border-left: none;
-}
-
 h1 {
   text-align: center;
   margin-bottom: 10px;
+}
+
+.goal-input-form {
+  position: relative;
+  height: 30px;
+  width: 300px;
+  margin: 0 auto;
+}
+
+.goal-input-done {
+  position: absolute;
+  top: 6px;
+  right: 0;
 }

@@ -8,6 +8,7 @@ import {addGoal, Goal} from "./types/goal.ts";
 export const Goals = () => {
   const [curGoal, setGoal] = useState<string>("");
   const [curAchievedGoalIds, setAchievedGoalIds] = useRecoilState(curAchievedGoalIdsState);
+  const [isGoalBeingWritten, setIsGoalBeingWritten] = useState(false);
   const setTodayAchievedGoals = useSetRecoilState(todayAchievedGoalsState);
 
   const onGoalAchieved = () => {
@@ -21,16 +22,35 @@ export const Goals = () => {
     setGoal("");
   }
 
+  const onCheckClicked = () => {
+    setIsGoalBeingWritten(false);
+  }
+
   return (
               <div className="goal-section">
                 <h1>Small Goal</h1>
-                <input id="goal" value={curGoal}
-                       onChange={(event) => {setGoal(event.target.value)}}
-                       placeholder={"what you want to finish in the current or next focus"}
-                />
+                <div className="goal-input-form">
+                  <input id="goal" value={curGoal}
+                         onChange={(event) => {setGoal(event.target.value)}}
+                         placeholder={"Click here to input your small goal"}
+                         onFocus={() => setIsGoalBeingWritten(true)}
+                         onBlur={() => setIsGoalBeingWritten(false)}
+                         style = {{height: '100%',
+                           width: '100%',
+                           borderTop: 'none',
+                           borderRight: 'none',
+                           borderLeft: 'none',
+                           borderBottom: 'none',
+                         }}
+                  />
+                  {
+                    isGoalBeingWritten ?
+                        <button className="goal-input-done" onClick={onCheckClicked}><i className="fa fa-check"></i></button>
+                        :<></>
+                  }
+                </div>
                 <div>
-                  <button className="completed-button" onClick={onGoalAchieved} disabled={curGoal === ""}> completed
-                    {/*<i className="fa fa-solid fa-check"></i>*/}
+                  <button className="completed-button" onClick={onGoalAchieved} disabled={curGoal === ""}> Achieved 🎉
                   </button>
                 </div>
               </div>
