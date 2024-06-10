@@ -5,7 +5,7 @@ export type Session = {
     startTime: Date;
     endTime: Date;
     pauseDurations: PauseDuration[];
-    achievedMissions: string[];
+    achievedMissionIds: number[];
 }
 
 export type PauseDuration = {

@@ -2,14 +2,20 @@ import "./Goals.css"
 
 import {useState} from "react";
 import {useRecoilState} from "recoil";
-import {curAchievedMissionsState} from "./state.ts";
+import {curAchievedGoalIdsState} from "./state.ts";
+import {addGoal, Goal} from "./types/goal.ts";
 
 export const Goals = () => {
-  const [curGoal, setGoal] = useState("");
-  const [curAchivedGoals, setAchievedGoals] = useRecoilState(curAchievedMissionsState);
+  const [curGoal, setGoal] = useState<string>("");
+  const [curAchievedGoalIds, setAchievedGoalIds] = useRecoilState(curAchievedGoalIdsState);
 
   const onGoalAchieved = () => {
-    setAchievedGoals([...curAchivedGoals, curGoal]);
+    const achievedGoal: Goal = {
+      statement: curGoal
+    }
+    addGoal(achievedGoal).then(id =>
+        setAchievedGoalIds([...curAchievedGoalIds, id])
+    )
     setGoal("");
   }
 
@@ -21,7 +27,7 @@ export const Goals = () => {
                        placeholder={"what you want to finish in the current or next focus"}
                 />
                 <div>
-                  <button className="completed-button" onClick={onGoalAchieved}> completed
+                  <button className="completed-button" onClick={onGoalAchieved} disabled={curGoal === ""}> completed
                     {/*<i className="fa fa-solid fa-check"></i>*/}
                   </button>
                 </div>

@@ -17,7 +17,7 @@ import {
   currentStartTimeState,
   todayDoneSessionListState,
   secondsState,
-  timerConfigState, currentDurationTypeState, curAchievedMissionsState
+  timerConfigState, currentDurationTypeState, curAchievedGoalIdsState
 } from "./state.ts";
 import {curDate} from "./Util.ts";
 
@@ -102,7 +102,7 @@ export const RecordsBar = () => {
   const seconds = useRecoilValue(secondsState)
   const settings = useRecoilValue(timerConfigState)
   const curDurationType = useRecoilValue(currentDurationTypeState)
-  const curAchievedMissions = useRecoilValue(curAchievedMissionsState)
+  const curAchievedMissions = useRecoilValue(curAchievedGoalIdsState)
 
   return (
       <div className="graph-container">
@@ -223,7 +223,7 @@ const AddRecord = (setDoneSessionList: React.Dispatch<React.SetStateAction<Sessi
       startTime: newRecordStartTime,
       endTime: newRecordEndTime,
       pauseDurations: [],
-      achievedMissions: [],
+      achievedMissionIds: [],
     }
 
     addSessionToDb(doneSession);
@@ -247,7 +247,7 @@ const AddRecord = (setDoneSessionList: React.Dispatch<React.SetStateAction<Sessi
   )
 }
 
-const OngoingSessionSummary = (curSessionStartTime: Date, achievedGoals: string[]) => {
+const OngoingSessionSummary = (curSessionStartTime: Date, achievedGoalIds: number[]) => {
   const start_h = curSessionStartTime.getHours()
   const start_m = padZero(curSessionStartTime.getMinutes())
 
@@ -255,8 +255,8 @@ const OngoingSessionSummary = (curSessionStartTime: Date, achievedGoals: string[
       <>
         <p>ongoing from {start_h}:{start_m}</p>
         {
-          achievedGoals.length > 0 ?
-              achievedGoals.map((item, index) => (
+          achievedGoalIds.length > 0 ?
+              achievedGoalIds.map((item, index) => (
                   <li key={index}>{item}</li>
               ))
               :<></>
@@ -282,8 +282,8 @@ const DoneSessionSummary = (session: Session) => {
       <>
         <p>{start_h}:{start_m} - {end_h}:{end_m} ({diff_m}m)</p>
         {
-          session.achievedMissions.length > 0 ?
-          session.achievedMissions.map((item, index) => (
+          session.achievedMissionIds.length > 0 ?
+          session.achievedMissionIds.map((item, index) => (
               <li key={index}>{item}</li>
           ))
               :<></>
