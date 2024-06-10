@@ -45,7 +45,7 @@ export const Goals = () => {
                   />
                   {
                     isGoalBeingWritten ?
-                        <button className="goal-input-done" onClick={onCheckClicked}><i className="fa fa-check"></i></button>
+                        <button className="goal-input-done" onClick={onCheckClicked}>Apply</button>
                         :<></>
                   }
                 </div>

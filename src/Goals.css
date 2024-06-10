@@ -30,6 +30,15 @@ h1 {
 
 .goal-input-done {
   position: absolute;
-  top: 6px;
+  top: 5px;
   right: 0;
+  background-color: gray;
+  color: white;
+  padding: 3px;
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+.goal-input-done:hover {
+  background-color: lightgray;
 }
