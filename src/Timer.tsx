@@ -159,6 +159,7 @@ export const Timer = () => {
             <div>
               <button className="skip-button" onClick={proceedDuration}>
                 {isRunning ? "finish now" : "skip"}
+                {/*todo: display skip logo*/}
               </button>
             </div>
           </div>
