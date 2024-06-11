@@ -41,3 +41,11 @@ p {
 .contents {
   display: flex;
 }
+
+.left-contents {
+  width: 20%;
+}
+
+.right-contents {
+  width: 80%;
+}
