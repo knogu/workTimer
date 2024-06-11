@@ -9,6 +9,7 @@ body {
 
 .time {
   font-size: 100px;
+  color: #333333;
 }
 
 .finished-sessions {
