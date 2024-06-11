@@ -9,6 +9,7 @@ export const Goals = () => {
   const [curGoal, setGoal] = useState<string>("");
   const [curAchievedGoalIds, setAchievedGoalIds] = useRecoilState(curAchievedGoalIdsState);
   const [isGoalBeingWritten, setIsGoalBeingWritten] = useState(false);
+  const [isGoalHovered, setIsGoalHovered] = useState(false);
   const setTodayAchievedGoals = useSetRecoilState(todayAchievedGoalsState);
 
   const onGoalAchieved = () => {
@@ -35,12 +36,14 @@ export const Goals = () => {
                          placeholder={"Click here to input your small goal"}
                          onFocus={() => setIsGoalBeingWritten(true)}
                          onBlur={() => setIsGoalBeingWritten(false)}
+                         onMouseEnter={() => setIsGoalHovered(true)}
+                         onMouseLeave={() => setIsGoalHovered(false)}
                          style = {{height: '100%',
                            width: '100%',
                            borderTop: 'none',
                            borderRight: 'none',
                            borderLeft: 'none',
-                           borderBottom: 'none',
+                           borderBottom: curGoal === "" || isGoalHovered ? '2px solid gray' : 'none',
                          }}
                   />
                   {
