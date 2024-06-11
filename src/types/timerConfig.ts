@@ -39,18 +39,16 @@ export class TimerConfig {
   shortBreakLength: number;
   longBreakLength: number;
   focusCntBeforeLongBreak: number;
-  goalMinutesPerDay: number;
 
-  constructor(focusLength: number, shortBreakLength: number, longBreakLength: number, focusCntBeforeLongBreak: number, goalMinutesPerDay: number) {
+  constructor(focusLength: number, shortBreakLength: number, longBreakLength: number, focusCntBeforeLongBreak: number) {
     this.focusLength = focusLength;
     this.shortBreakLength = shortBreakLength;
     this.longBreakLength = longBreakLength;
     this.focusCntBeforeLongBreak = focusCntBeforeLongBreak;
-    this.goalMinutesPerDay = goalMinutesPerDay;
   }
 
   static async load() {
-    const config = new TimerConfig(25, 5, 20, 4, 120);
+    const config = new TimerConfig(25, 5, 20, 4);
     for (const key of Object.keys(config) as (keyof TimerConfig)[]) {
       const entry = await configDB.settings.get(key);
       if (entry) {

@@ -42,13 +42,6 @@ export default function SettingsPage() {
                     <input id="session-cnt" value={timerConfig.focusCntBeforeLongBreak} type="number"
                            onChange={(event) => {onSettingsChange({...timerConfig, focusCntBeforeLongBreak: parseInt(event.target.value)})}}/>
                 </div>
-
-                <div className="config-item">
-                    <label htmlFor="goal">goal</label>
-                    <input id="goal" value={timerConfig.goalMinutesPerDay} type="number"
-                           onChange={(event)=> {onSettingsChange({...timerConfig, goalMinutesPerDay: parseInt(event.target.value)})}}/>
-                    min
-                </div>
             </div>
         </>
     )
