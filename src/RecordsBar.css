@@ -3,13 +3,9 @@
     margin: 0px auto 0;
     position: relative;
     border: 1px solid darkgray;
-    height: 720px;
+    height: 650px;
     border-radius: 5px;
 }
-
-/*.doneSession-0 {*/
-/*    border-radius: 5px 5px 0 0;*/
-/*}*/
 
 .startTime {
     position: absolute;
@@ -78,5 +74,5 @@
 
 .total-minutes {
     text-align: center;
-    margin-bottom: 30px;
+    margin-top: 30px;
 }

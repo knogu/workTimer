@@ -99,9 +99,6 @@ export const RecordsBar = () => {
 
   return (
       <div className="graph-container">
-        <div className="total-minutes">
-          <p>total {displayedMinutes(sessionMinutesSum(todayDoneSessionList))}</p>
-        </div>
         <div className="records-bar">
           {
             barStartTime.getMinutes() < 50 ?
@@ -178,6 +175,9 @@ export const RecordsBar = () => {
             </>
           }
 
+        </div>
+        <div className="total-minutes">
+          <p>total {displayedMinutes(sessionMinutesSum(todayDoneSessionList))}</p>
         </div>
       </div>
   )
