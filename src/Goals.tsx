@@ -4,6 +4,7 @@ import {useState} from "react";
 import {useRecoilState, useSetRecoilState} from "recoil";
 import {curAchievedGoalIdsState, todayAchievedGoalsState} from "./state.ts";
 import {addGoal, Goal} from "./types/goal.ts";
+import {curDate} from "./Util.ts";
 
 export const Goals = () => {
   const [curGoal, setGoal] = useState<string>("");
@@ -15,7 +16,8 @@ export const Goals = () => {
 
   const onGoalAchieved = () => {
     const achievedGoal: Goal = {
-      statement: curGoal
+      statement: curGoal,
+      achievedTimestamp: curDate(),
     }
     addGoal(achievedGoal).then(id =>
         setAchievedGoalIds([...curAchievedGoalIds, id])

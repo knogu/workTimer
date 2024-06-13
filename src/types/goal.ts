@@ -1,9 +1,10 @@
 import Dexie from 'dexie';
+import {curDate} from "../Util.ts";
 
 export type Goal = {
   id?: number;
   statement: string;
-  // sessionIdWhenAchieved: Date;
+  achievedTimestamp: Date;
 };
 
 class GoalDatabase extends Dexie {
@@ -11,8 +12,8 @@ class GoalDatabase extends Dexie {
 
   constructor() {
     super("GoalDatabase");
-    this.version(1).stores({
-      goals: '++id, statement, sessionIdWhenAchieved'
+    this.version(2).stores({
+      goals: '++id, statement, achievedTimestamp'
     });
 
     this.goals = this.table("goals");
@@ -37,6 +38,16 @@ export async function deleteGoal(id: number): Promise<void> {
 
 export async function getAllGoals(): Promise<Goal[]> {
   return goalDB.goals.toArray();
+}
+
+export async function getGoalsAchievedToday(date: Date = curDate()): Promise<Goal[]> {
+  const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+  const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+
+  return goalDB.goals
+      .where('achievedTimestamp')
+      .between(startOfDay, endOfDay)
+      .toArray();
 }
 
 export const goalDB = new GoalDatabase();
