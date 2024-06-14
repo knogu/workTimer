@@ -30,14 +30,16 @@ export const Goals = () => {
     setIsGoalBeingWritten(false);
   }
 
-  let completedButtonColor: string = '';
-  if (curGoal === "") {
-    completedButtonColor = '#d8edf0'
-  } else if (isCompletedHovered) {
-    completedButtonColor = '#0065ff'
-  } else {
-    completedButtonColor = '#0052cc'
+  const getCompletedButtonColor = () => {
+    if (curGoal === "" || isGoalBeingWritten) {
+      return '#d8edf0'
+    } else if (isCompletedHovered) {
+      return '#0065ff'
+    } else {
+      return '#0052cc'
+    }
   }
+
 
   return (
               <div className="goal-section">
@@ -67,12 +69,12 @@ export const Goals = () => {
                 <div>
                   <button className="completed-button"
                           onClick={onGoalAchieved}
-                          disabled={curGoal === ""}
+                          disabled={curGoal === "" || isGoalBeingWritten}
                           onMouseEnter={() => setIsCompletedHovered(true)}
                           onMouseLeave={() => setIsCompletedHovered(false)}
                           style={{
-                            cursor: curGoal === "" ? 'default' : 'pointer',
-                            backgroundColor: completedButtonColor,
+                            cursor: curGoal === "" || isGoalBeingWritten ? 'default' : 'pointer',
+                            backgroundColor: getCompletedButtonColor(),
                             marginTop: '20px',
                             padding: '7px',
                             borderRadius: '5px',
