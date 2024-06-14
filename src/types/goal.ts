@@ -50,4 +50,11 @@ export async function getGoalsAchievedToday(date: Date = curDate()): Promise<Goa
       .toArray();
 }
 
+export async function getGoalsByIds(ids: number[]): Promise<Goal[]> {
+  return goalDB.goals
+      .where('id')
+      .anyOf(ids)
+      .toArray();
+}
+
 export const goalDB = new GoalDatabase();

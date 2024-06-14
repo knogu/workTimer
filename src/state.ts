@@ -1,8 +1,7 @@
 import {atom, selector} from "recoil";
 import {
     PauseDuration,
-    Session,
-    sessionMinutesSum,
+    sessionMinutesSum, SessionWithAchievedGoals,
 } from "./types/session.ts";
 
 import {
@@ -62,12 +61,12 @@ export const curPauseDurationsState = atom<PauseDuration[]>({
     default: []
 })
 
-export const curAchievedGoalIdsState = atom<number[]>({
-    key: "curAchievedGoalIds",
+export const curAchievedGoalsState = atom<Goal[]>({
+    key: "curAchievedGoals",
     default: []
 })
 
-export const todayDoneSessionListState = atom<Session[]>({
+export const todayDoneSessionListState = atom<SessionWithAchievedGoals[]>({
     key: "todayDoneSessionListState",
     default: []
 })

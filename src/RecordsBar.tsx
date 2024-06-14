@@ -4,8 +4,8 @@ import {useEffect, useState} from "react";
 import {
   getMinDiff,
   getSessionLengthMin,
-  getTodaySessions,
-  Session, sessionMinutesSum
+  getTodaySessionsWithAchievedGoals,
+  Session, sessionMinutesSum, SessionWithAchievedGoals
 } from "./types/session.ts";
 import {
   DurationType,
@@ -16,9 +16,10 @@ import {
   currentStartTimeState,
   todayDoneSessionListState,
   secondsState,
-  timerConfigState, currentDurationTypeState, curAchievedGoalIdsState
+  timerConfigState, currentDurationTypeState, curAchievedGoalsState
 } from "./state.ts";
 import {curDate} from "./Util.ts";
+import {Goal} from "./types/goal.ts";
 
 const getBarEndTime = () => {
   const t = curDate();
@@ -26,7 +27,7 @@ const getBarEndTime = () => {
   return t;
 }
 
-const getHeight = (session: Session, pixPerMin: number) => {
+const getHeight = (session: Session | SessionWithAchievedGoals, pixPerMin: number) => {
   const minDiff = getSessionLengthMin(session)
   return pixPerMin * minDiff
 }
@@ -35,7 +36,7 @@ const getTop = (sessionStartTime: Date, pixPerMin: number, barStartTime: Date) =
   return pixPerMin * getMinDiff(barStartTime, sessionStartTime)
 }
 
-const getMiddle = (session: Session, pixPerMin: number, barStartTime: Date) => {
+const getMiddle = (session: Session | SessionWithAchievedGoals, pixPerMin: number, barStartTime: Date) => {
   return pixPerMin * getMinDiff(barStartTime, session.startTime) + getHeight(session, pixPerMin) * 0.5 - 20
 }
 
@@ -58,8 +59,8 @@ export const RecordsBar = () => {
 
   const [barEndTime, setBarEndTime] = useState<Date>(getBarEndTime);
   useEffect(() => {
-    getTodaySessions().then((data) => {
-      setTodayDoneSessionList(() => data)
+    getTodaySessionsWithAchievedGoals().then((sessionsWithGoals) => {
+      setTodayDoneSessionList(sessionsWithGoals)
     })
 
     const timer = setInterval(() => {
@@ -95,7 +96,7 @@ export const RecordsBar = () => {
   const seconds = useRecoilValue(secondsState)
   const settings = useRecoilValue(timerConfigState)
   const curDurationType = useRecoilValue(currentDurationTypeState)
-  const curAchievedMissions = useRecoilValue(curAchievedGoalIdsState)
+  const curAchievedMissions = useRecoilValue(curAchievedGoalsState)
 
   return (
       <div className="graph-container">
@@ -183,7 +184,7 @@ export const RecordsBar = () => {
   )
 }
 
-const OngoingSessionSummary = (curSessionStartTime: Date, achievedGoalIds: number[]) => {
+const OngoingSessionSummary = (curSessionStartTime: Date, achievedGoals: Goal[]) => {
   const start_h = curSessionStartTime.getHours()
   const start_m = padZero(curSessionStartTime.getMinutes())
 
@@ -191,9 +192,9 @@ const OngoingSessionSummary = (curSessionStartTime: Date, achievedGoalIds: numbe
       <>
         <p>ongoing from {start_h}:{start_m}</p>
         {
-          achievedGoalIds.length > 0 ?
-              achievedGoalIds.map((item, index) => (
-                  <li key={index}>{item}</li>
+          achievedGoals.length > 0 ?
+              achievedGoals.map((goal, index) => (
+                  <li key={index}>{goal.statement}</li>
               ))
               :<></>
         }
@@ -201,7 +202,7 @@ const OngoingSessionSummary = (curSessionStartTime: Date, achievedGoalIds: numbe
   )
 }
 
-const DoneSessionSummary = (session: Session) => {
+const DoneSessionSummary = (session: SessionWithAchievedGoals) => {
   const start = session.startTime
   const start_h = start.getHours()
   const start_m = padZero(start.getMinutes())
@@ -218,9 +219,9 @@ const DoneSessionSummary = (session: Session) => {
       <>
         <p>{start_h}:{start_m} - {end_h}:{end_m} ({diff_m}m)</p>
         {
-          session.achievedMissionIds.length > 0 ?
-          session.achievedMissionIds.map((item, index) => (
-              <li key={index}>{item}</li>
+          session.achievedGoals.length > 0 ?
+          session.achievedGoals.map((goal, index) => (
+              <li key={index}>{goal.statement}</li>
           ))
               :<></>
         }

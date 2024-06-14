@@ -4,11 +4,16 @@ import './Timer.css';
 import {useEffect, useState} from "react";
 import Push from "push.js";
 import {DurationType, getPushMsg,} from "./types/timerConfig.ts"
-import {addSessionToDb, getTodaySessions, Session,} from "./types/session.ts"
+import {
+  addSessionToDb,
+  getTodaySessionsWithAchievedGoals,
+  Session,
+  SessionWithAchievedGoals,
+} from "./types/session.ts"
 import {curDate, padZero} from "./Util.ts";
 import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 import {
-  curAchievedGoalIdsState,
+  curAchievedGoalsState,
   curPauseDurationsState,
   currentDurationTypeState,
   currentStartTimeState,
@@ -26,23 +31,30 @@ export const Timer = () => {
   const [curSessionStartTime, setCurSessionStartTime] = useRecoilState(currentStartTimeState)
   const [curDurationType, setCurDurationType] = useRecoilState(currentDurationTypeState)
   const curPauseDurations = useRecoilValue(curPauseDurationsState)
-  const [curAchievedMissions, setAchievedMissions] = useRecoilState(curAchievedGoalIdsState)
+  const [curAchievedMissions, setAchievedMissions] = useRecoilState(curAchievedGoalsState)
   const setTodayDoneSessionList = useSetRecoilState(todayDoneSessionListState)
   const [curDurationIdx, setDurationIdx] = useState(0);
   const settings = useRecoilValue(timerConfigState)
 
   const proceedDuration = () => {
     if (curDurationType === DurationType.Focus && curSessionStartTime !== null) { // curSessionStartTime is null when skipping the current focus duration without starting
+      const goalIds = curAchievedMissions.map((mission) => mission.id!)
       const doneSession: Session = {
         startTime: curSessionStartTime!,
         endTime: curDate(),
         pauseDurations: curPauseDurations,
-        achievedMissionIds: [...curAchievedMissions],
+        achievedMissionIds: [...goalIds],
       }
       setAchievedMissions([])
-
       addSessionToDb(doneSession);
-      setTodayDoneSessionList((prev) => [...prev, doneSession])
+
+      const doneSessionWithAchievedGoals: SessionWithAchievedGoals = {
+        startTime: curSessionStartTime!,
+        endTime: curDate(),
+        pauseDurations: curPauseDurations,
+        achievedGoals: curAchievedMissions,
+      }
+      setTodayDoneSessionList((prev) => [...prev, doneSessionWithAchievedGoals])
     }
 
     setCurSessionStartTime(null);
@@ -112,7 +124,7 @@ export const Timer = () => {
   }
 
   useEffect(() => {
-    getTodaySessions().then((sessions) => setTodayDoneSessionList(sessions))
+    getTodaySessionsWithAchievedGoals().then((sessions) => setTodayDoneSessionList(sessions))
   }, []);
 
   const postFix = (n: number) => {

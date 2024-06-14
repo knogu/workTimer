@@ -4,7 +4,7 @@ import {RecordsBar} from "./RecordsBar.tsx";
 import Header from "./Header.tsx";
 import {curDate} from "./Util.ts";
 import AchievedGoals from "./Achievements.tsx";
-import {addSessionToDb, Session} from "./types/session.ts";
+import {addSessionToDb, Session, SessionWithAchievedGoals} from "./types/session.ts";
 import {ChangeEvent, useState} from "react";
 import {useSetRecoilState} from "recoil";
 import {todayDoneSessionListState} from "./state.ts";
@@ -76,8 +76,14 @@ const AddRecord = () => {
     }
 
     addSessionToDb(doneSession);
+    const doneSessionWithAchievedGoals: SessionWithAchievedGoals = {
+      startTime: newRecordStartTime,
+      endTime: newRecordEndTime,
+      pauseDurations: [],
+      achievedGoals: [],
+    }
     setTodayDoneSessionList((prev) =>
-        [...prev, doneSession].sort((a, b) => a.startTime.getTime() - b.startTime.getTime())
+        [...prev, doneSessionWithAchievedGoals].sort((a, b) => a.startTime.getTime() - b.startTime.getTime())
     )
   }
 
