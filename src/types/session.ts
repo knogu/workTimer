@@ -18,11 +18,20 @@ export type SessionWithAchievedGoals = {
 
 export function getActualFocusMinutes(session: SessionWithAchievedGoals) {
     let actualDuration = session.endTime.getTime() - session.startTime.getTime()
+    console.log("base startTime: ", session.startTime.toTimeString())
+    console.log("base endTime: ", session.endTime.toTimeString())
+    console.log("base duration: ", (session.endTime.getTime() - session.startTime.getTime()) / 1000 / 60)
     for (const pauseDuration of session.pauseDurations) {
+        console.log("pause startTime: ", pauseDuration.pauseStart.toTimeString())
+        console.log("pause endTime: ", pauseDuration.pauseEnd.toTimeString())
+        console.log("pause duration: ", (pauseDuration.pauseEnd.getTime() - pauseDuration.pauseStart.getTime()) / 1000 / 60)
         actualDuration -= pauseDuration.pauseEnd.getTime() - pauseDuration.pauseStart.getTime()
     }
-    actualDuration = Math.floor(actualDuration / 1000)
-    return Math.floor(actualDuration / 60)
+    const actualDurationSeconds = Math.floor(actualDuration / 1000)
+    console.log("result: ", Math.floor(actualDurationSeconds / 60))
+    console.log("=========")
+    console.log("")
+    return Math.floor(actualDurationSeconds / 60)
 }
 
 export type PauseDuration = {
