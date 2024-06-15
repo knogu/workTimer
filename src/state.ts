@@ -51,7 +51,7 @@ export const currentDurationTypeState = atom<DurationType>({
     default: DurationType.Focus
 })
 
-export const curPauseTimeState = atom<Date | null>({
+export const curPauseStartTimeState = atom<Date | null>({
     key: "currentPauseTimeState",
     default: null
 })

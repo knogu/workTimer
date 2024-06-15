@@ -14,7 +14,7 @@ import {curDate, padZero} from "./Util.ts";
 import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 import {
   curAchievedGoalsState,
-  curPauseDurationsState,
+  curPauseDurationsState, curPauseStartTimeState,
   currentDurationTypeState,
   currentStartTimeState,
   timerConfigState,
@@ -30,7 +30,8 @@ function timerString(minutes: number, seconds: number) {
 export const Timer = () => {
   const [curSessionStartTime, setCurSessionStartTime] = useRecoilState(currentStartTimeState)
   const [curDurationType, setCurDurationType] = useRecoilState(currentDurationTypeState)
-  const curPauseDurations = useRecoilValue(curPauseDurationsState)
+  const [curPauseDurations, setCurPauseDurations] = useRecoilState(curPauseDurationsState)
+  const [curPauseStartTime, setCurPauseStartTime] = useRecoilState(curPauseStartTimeState)
   const [curAchievedMissions, setAchievedMissions] = useRecoilState(curAchievedGoalsState)
   const setTodayDoneSessionList = useSetRecoilState(todayDoneSessionListState)
   const [curDurationIdx, setDurationIdx] = useState(0);
@@ -42,23 +43,24 @@ export const Timer = () => {
       const doneSession: Session = {
         startTime: curSessionStartTime!,
         endTime: curDate(),
-        pauseDurations: curPauseDurations,
+        pauseDurations: curPauseStartTime !== null ? [...curPauseDurations, {pauseStart: curPauseStartTime, pauseEnd: curDate()}] : curPauseDurations,
         achievedMissionIds: [...goalIds],
       }
-      setAchievedMissions([])
-      addSessionToDb(doneSession);
 
+      addSessionToDb(doneSession);
       const doneSessionWithAchievedGoals: SessionWithAchievedGoals = {
-        startTime: curSessionStartTime!,
-        endTime: curDate(),
-        pauseDurations: curPauseDurations,
+        startTime: doneSession.startTime,
+        endTime: doneSession.endTime,
+        pauseDurations: doneSession.pauseDurations,
         achievedGoals: curAchievedMissions,
       }
       setTodayDoneSessionList((prev) => [...prev, doneSessionWithAchievedGoals])
+      setAchievedMissions([])
     }
 
     setCurSessionStartTime(null);
-
+    setCurPauseStartTime(null);
+    setCurPauseDurations([]);
 
     let nextMinutes: number;
 

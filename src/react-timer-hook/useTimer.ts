@@ -2,7 +2,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 import {
   curPauseDurationsState,
-  curPauseTimeState,
+  curPauseStartTimeState,
   currentDurationTypeState,
   didStartState,
   expiryState,
@@ -35,7 +35,7 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   const [expiryTimestamp, setExpiryTimestamp] = useRecoilState(expiryState);
   const [isRunning, setIsRunning] = useRecoilState(isRunningState);
   const [didStart, setDidStart] = useRecoilState(didStartState);
-  const [curPauseTime, setCurPauseTime] = useRecoilState(curPauseTimeState);
+  const [curPauseStartTime, setCurPauseStartTimeState] = useRecoilState(curPauseStartTimeState);
   const setCurPauseTimeDurations = useSetRecoilState(curPauseDurationsState);
   const curDurationType = useRecoilValue(currentDurationTypeState);
   const [delay, setDelay] = useState<number | null>(1000);
@@ -66,10 +66,10 @@ export default function useTimer(onExpire: () => void) : TimerResult {
 
   const pause = useCallback(() => {
     setIsRunning(false);
-    if (curPauseTime !== null) {
+    if (curPauseStartTime !== null) {
       console.error("pauseTime should be null when getting paused")
     }
-    setCurPauseTime(() => curDate())
+    setCurPauseStartTimeState(() => curDate())
   }, []);
 
   const restart = useCallback((newExpiryTimestamp: Date, newAutoStart = true) => {
@@ -81,14 +81,15 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   }, []);
 
   const resume = useCallback(() => {
-    if (curPauseTime !== null) {
-      const p: PauseDuration = {pauseStart: curPauseTime!, pauseEnd: curDate()} // need to use an instance different from `time` to prevent being overwritten
+    if (curPauseStartTime !== null) {
+      const p: PauseDuration = {pauseStart: curPauseStartTime!, pauseEnd: curDate()} // need to use an instance different from `time` to prevent being overwritten
       setCurPauseTimeDurations((prev) => [...prev, p])
     }
+    setCurPauseStartTimeState(null);
     const time = curDate();
     time.setMilliseconds(time.getMilliseconds() + (seconds * 1000));
     restart(time);
-  }, [seconds, restart, curPauseTime]);
+  }, [seconds, restart, curPauseStartTime]);
 
   const start = useCallback(() => {
     if (didStart) {
