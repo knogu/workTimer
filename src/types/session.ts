@@ -16,6 +16,15 @@ export type SessionWithAchievedGoals = {
     achievedGoals: Goal[];
 }
 
+export function getActualFocusMinutes(session: SessionWithAchievedGoals) {
+    let actualDuration = session.endTime.getTime() - session.startTime.getTime()
+    for (const pauseDuration of session.pauseDurations) {
+        actualDuration -= pauseDuration.pauseEnd.getTime() - pauseDuration.pauseStart.getTime()
+    }
+    actualDuration = Math.floor(actualDuration / 1000)
+    return Math.floor(actualDuration / 60)
+}
+
 export type PauseDuration = {
     pauseStart: Date;
     pauseEnd: Date;

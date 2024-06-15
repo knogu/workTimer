@@ -2,6 +2,7 @@ import "./RecordsBar.css"
 
 import {useEffect, useState} from "react";
 import {
+  getActualFocusMinutes,
   getMinDiff,
   getSessionLengthMin,
   getTodaySessionsWithAchievedGoals,
@@ -211,13 +212,9 @@ const DoneSessionSummary = (session: SessionWithAchievedGoals) => {
   const end_h = end.getHours()
   const end_m = padZero(end.getMinutes())
 
-  const diff = end.getTime() - start.getTime()
-  const diff_s = Math.floor(diff / 1000)
-  const diff_m = Math.floor(diff_s / 60)
-
   return (
       <>
-        <p>{start_h}:{start_m} - {end_h}:{end_m} ({diff_m}m)</p>
+        <p>{start_h}:{start_m} - {end_h}:{end_m} (actual: {getActualFocusMinutes(session)}m)</p>
         {
           session.achievedGoals.length > 0 ?
           session.achievedGoals.map((goal, index) => (

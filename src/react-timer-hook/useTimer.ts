@@ -81,10 +81,11 @@ export default function useTimer(onExpire: () => void) : TimerResult {
   }, []);
 
   const resume = useCallback(() => {
+    if (curPauseTime !== null) {
+      const p: PauseDuration = {pauseStart: curPauseTime!, pauseEnd: curDate()} // need to use an instance different from `time` to prevent being overwritten
+      setCurPauseTimeDurations((prev) => [...prev, p])
+    }
     const time = curDate();
-    // TODO: put this log only when resuming, not starting
-    const p: PauseDuration = {pauseStart: curPauseTime!, pauseEnd: time}
-    setCurPauseTimeDurations((prev) => [...prev, p])
     time.setMilliseconds(time.getMilliseconds() + (seconds * 1000));
     restart(time);
   }, [seconds, restart, curPauseTime]);
